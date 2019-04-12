@@ -38,6 +38,6 @@ def test_pygrep_iterator_lines():
         for ishift in [0, 1, 2, 3]:
             print("ilen = %d, ishift = %d" % (ilen, ishift))
             iterator = file_reading_iterator_raw(h2o)
-            val_iter = pygrep_iterator_lines(iterator, "NAtoms=", ilen=ilen, ishift=ishift)
+            val_iter = pygrep_iterator_lines(iterator, "NAtoms=", ilen=ilen, ishift=ishift)[0]
             print("length= %d" % len(val_iter.splitlines()))
             print(val_iter)

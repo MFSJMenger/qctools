@@ -47,6 +47,7 @@ def file_input_via_editor(initial_msg, editor='vim'):
 #-----------------------------------------------------#
 """
 
+
 def pygrep_str(text, keyword, length=100, ishift=0, begin=0):
     """ greps part of a text, the fragment Text has lenght characters
         and is the text in shift characters from the keyword
@@ -110,11 +111,13 @@ def pygrep(text, keyword, length=100, shift=0, begin=0):
                      start+shift+length],
                 start+shift+length)
 
+
 def partial_string(string, ishift, ilen):
     """ return partial string """
     if len(string) < ishift+ilen:
         return string[ishift:]
     return string[ishift: ishift + ilen]
+
 
 def pygrep_iterator(iterator, keyword, ilen=100, ishift=0, begin=0):
     """ """
@@ -136,7 +139,7 @@ def pygrep_iterator(iterator, keyword, ilen=100, ishift=0, begin=0):
         return (partial_string(out_str, ishift, ilen), 1)
     # multi line grep
     for line in iterator:
-        ibuffer += len(line) 
+        ibuffer += len(line)
         out_str += line
         if ibuffer > maxlen:
             return (partial_string(out_str, ishift, ilen), 1)
@@ -146,15 +149,14 @@ def pygrep_iterator(iterator, keyword, ilen=100, ishift=0, begin=0):
 
 def pygrep_iterator_lines(iterator, keyword, ilen=10, ishift=0):
     """ """
-
+    #
     istart = 0
-
+    #
     out_str = ""
     icount = -1
-
+    #
     if ishift == 0:
         istart = 1
-
     # get keyword
     for line in iterator:
         if keyword in line:
@@ -175,11 +177,11 @@ def pygrep_iterator_lines(iterator, keyword, ilen=10, ishift=0):
     # if not found return
     if icount == -1:
         return (None, -1)
-
+    #
     for i in range(istart, ilen):
-            try:
-                out_str += next(iterator)
-            except StopIteration:
-                break
+        try:
+            out_str += next(iterator)
+        except StopIteration:
+            break
     # return but remove last newline
-    return out_str[:-1]
+    return out_str[:-1], 1
