@@ -1,4 +1,5 @@
-from ..qctools import QCReader, GaussianReader
+from ..qctools import QCReader
+from ..parser import GaussianReader
 import os
 
 pwd = os.path.dirname(os.path.abspath(__file__))
@@ -8,4 +9,4 @@ def test_qcreader():
     QCReader(h2o)
 
 def test_gaussian_reader():
-    val = GaussianReader(h2o)
+    val = GaussianReader(h2o, ["NAtoms"])
