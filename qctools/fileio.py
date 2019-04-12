@@ -1,7 +1,6 @@
 from .utils import try_function_decorator
 
 # work with the file object itself
-
 @try_function_decorator("Error appending to file('$fileName')", {'fileName': 0 })
 def append_content_to_file(fileName, content, options="a"):
     """ append content to file [fileName]
@@ -36,11 +35,8 @@ def read_full_file(fileName, options="rb+"):
     return text
 
 # iterators
-
-def file_reading_iterator(fileName, comment_char="#", options='r', ignore_white_space=True):
+def file_reading_iterator(fileName, comment_char="#", options='r'):
     """generates an iterator to loop over the lines of a file"""
-    # convert comment_chars to a list
-    comment_chars = list(comment_chars)
     # actual loop
     with open(fileName, options) as f:
         while True:
@@ -50,10 +46,16 @@ def file_reading_iterator(fileName, comment_char="#", options='r', ignore_white_
             line = line.partition(comment_char)[0]
             # get rid of white spaces
             line = line.rstrip()
-            # ignore white space
-            if ignore_white_space is True:
-                if line == '': 
-                    continue
-            if any( [ line.startswith(char) for char in comment_chars ] ):
-                continue
+            # return line
+            yield line
+
+
+def file_reading_iterator_raw(fileName, options='r'):
+    """generates an iterator to loop over the lines of a file"""
+    # actual loop
+    with open(fileName, options) as f:
+        while True:
+            line = f.readline()
+            if not line: break
+            # return line
             yield line
