@@ -1,16 +1,8 @@
 from functools import partial
-from collections import OrderedDict
 from copy import deepcopy
 
 from .fileinput import pygrep_iterator_lines
-from .functions import str_split, identity
-from .functions import split_line_and_map, map_by_lines 
-from .fileinput import pygrep_iterator_lines
-from .fileio import file_reading_iterator_raw
-from .utils import classfunction_decorator
-
-from .gaussian_config import get_scf_done, get_crd
-
+from .functions import identity
 
 class Event(object):
 
@@ -28,6 +20,13 @@ class Event(object):
         # initialize settings
         self._settings = {}
         self._update_settings(settings)
+
+    def __str__(self):
+        return ""
+
+    @property
+    def name(self):
+        return self._name
 
     @property
     def reset(self):
@@ -116,78 +115,3 @@ class Event(object):
         if ierr != -1:
             result = self._process_func(result)
         return result, ierr
-
-
-class QCReader(object):
-    """Class to read information from ASCII text files"""
-
-    _events = OrderedDict()
-    _get_iterator = classfunction_decorator(file_reading_iterator_raw)
-
-    def __init__(self, filename, reset=True):
-        self._name = filename
-        self._reset = reset
-        self._values = dict( (key, None) for key in self._events.keys() )
-
-    @property
-    def parse(self):
-        self._parse_file()
-
-    def _set_iterator(self):
-        return self._get_iterator(self._name)
-
-    def _trigger_event(self, iterator, key):
-        event = self._events[key]
-        # reset iterator before event call
-        if event.reset is True:
-            iterator = self._set_iterator()
-        self._values[key], ierr = event.trigger(iterator, self._values)
-        # reset iterator after event call
-        if ierr == -1 and self._reset is True:
-            iterator = self._set_iterator()
-        return iterator, ierr
-
-    def _parse_file(self):
-        iterator = self._set_iterator()
-        for key in self.keys:
-            iterator, ierr = self._trigger_event(iterator, key)
-
-    @property
-    def filename(self):
-        return self._name
-
-    @property
-    def keys(self):
-        return self._events.keys()
-
-    def __getitem__(self, key):
-        assert key in self.keys
-        return self._values[key]
-
-
-NAtoms = Event('NAtoms', 'grep', 
-            {'keyword': 'NAtoms=',
-             'ilen': 1,
-             'ishift': 0,
-            },
-            func=partial(str_split, idx=1, typ=int),
-            )
-std_orientation = Event('standard_orientation', 
-           'grep', {
-             'keyword': 'Standard orientation:',
-             'ilen': 'NAtoms',
-             'ishift': 5,
-           },
-          func = partial(map_by_lines, 
-                  func=get_crd),
-          settings={'multi': True, 'reset': True},
-          )
-           
-
-
-class GaussianReader(QCReader):
-
-    _events = OrderedDict({
-        'NAtoms': NAtoms, 
-        'Ori': std_orientation,
-        })
