@@ -7,6 +7,7 @@ from .functions import str_split, identity
 from .functions import split_line_and_map, map_by_lines 
 from .fileinput import pygrep_iterator_lines
 from .fileio import file_reading_iterator_raw
+from .utils import classfunction_decorator
 
 from .gaussian_config import get_scf_done, get_crd
 
@@ -46,7 +47,8 @@ class Event(object):
         if event == 'grep':
             self._pygrep_lines(kwargs)
 
-    def _check_keys(self, set_keys, optional_set_keys, kwargs): 
+    @staticmethod
+    def _check_keys(set_keys, optional_set_keys, kwargs): 
 
         keys = {}
         replace_keys = {}
@@ -119,33 +121,23 @@ class Event(object):
 class QCReader(object):
     """Class to read information from ASCII text files"""
 
-    _elements = OrderedDict()
-    _funcs = { 'iterator': file_reading_iterator_raw,
-               'grep': pygrep_iterator_lines }
+    _events = OrderedDict()
+    _get_iterator = classfunction_decorator(file_reading_iterator_raw)
 
     def __init__(self, filename, reset=True):
         self._name = filename
         self._reset = reset
-        self._values = dict( (key, None) for key in self._elements.keys() )
-
+        self._values = dict( (key, None) for key in self._events.keys() )
 
     @property
     def parse(self):
         self._parse_file()
 
-    def _get_ilen(self, ilen):
-        """Get ILEN as a function of local variables"""
-        if type(ilen) == int:
-            return ilen
-        else:
-            return self._values[ilen]
-
     def _set_iterator(self):
-        return self._funcs['iterator'](self._name)
+        return self._get_iterator(self._name)
 
     def _trigger_event(self, iterator, key):
-
-        event = self._elements[key]
+        event = self._events[key]
         # reset iterator before event call
         if event.reset is True:
             iterator = self._set_iterator()
@@ -153,13 +145,11 @@ class QCReader(object):
         # reset iterator after event call
         if ierr == -1 and self._reset is True:
             iterator = self._set_iterator()
-
         return iterator, ierr
 
     def _parse_file(self):
         iterator = self._set_iterator()
-
-        for key in self._elements:
+        for key in self.keys:
             iterator, ierr = self._trigger_event(iterator, key)
 
     @property
@@ -168,7 +158,7 @@ class QCReader(object):
 
     @property
     def keys(self):
-        return self._elements.keys()
+        return self._events.keys()
 
     def __getitem__(self, key):
         assert key in self.keys
@@ -197,7 +187,7 @@ std_orientation = Event('standard_orientation',
 
 class GaussianReader(QCReader):
 
-    _elements = OrderedDict({
+    _events = OrderedDict({
         'NAtoms': NAtoms, 
         'Ori': std_orientation,
         })
