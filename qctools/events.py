@@ -4,11 +4,13 @@ from copy import deepcopy
 from .fileinput import pygrep_iterator_lines
 from .functions import identity
 
+
 class Event(object):
 
     default_settings = {
-        'multi': False, # call the event multiple times, till the end of the iterator is reached
-        'reset': False, # reset the iterator before calling the event
+        'multi': False,  # call the event multiple times,
+                         # till the end of the iterator is reached
+        'reset': False,  # reset the iterator before calling the event
     }
 
     def __init__(self, name, event, event_kwargs, func=identity, settings={}):
@@ -36,59 +38,65 @@ class Event(object):
         """ updates the settings """
         for key in settings:
             self._settings[key] = settings[key]
-        
+
         for key in self.default_settings:
             if key not in self._settings:
                 self._settings[key] = self.default_settings[key]
-        
+
     def _set_event(self, event, kwargs):
         """ set the event """
         if event == 'grep':
             self._pygrep_lines(kwargs)
 
     @staticmethod
-    def _check_keys(set_keys, optional_set_keys, kwargs): 
+    def _check_keys(set_keys, optional_set_keys, kwargs):
 
         keys = {}
         replace_keys = {}
 
         for key in set_keys:
             if key not in kwargs:
-                raise Exception('Keyword "%s" needs to be set in grep Event' % key)
-        
+                raise Exception('Keyword "%s" needs to be set in grep Event'
+                                % key)
+
         for key in optional_set_keys:
             if key not in kwargs:
-                raise Exception('Keyword "%s" needs to be set in grep Event' % key)
+                raise Exception('Keyword "%s" needs to be set in grep Event'
+                                % key)
             if type(kwargs[key]) == optional_set_keys[key]:
                 keys[key] = kwargs[key]
             else:
                 replace_keys[key] = kwargs[key]
         return keys, replace_keys
 
-
-    def _pygrep_lines(self, kwargs):    
+    def _pygrep_lines(self, kwargs):
         """ predefined pygrep event """
 
-        keys = {'ilen': int, 
+        keys = {'ilen': int,
                 'ishift': int}
         set_keys = ['keyword']
-    
+
         self._keys = {}
         self._replace_keys = {}
 
-        self._keys, self._replace_keys = self._check_keys(set_keys, keys, kwargs)
+        self._keys, self._replace_keys = self._check_keys(set_keys,
+                                                          keys, kwargs)
 
-        self._func = partial(pygrep_iterator_lines, keyword = kwargs['keyword'])
+        self._func = partial(pygrep_iterator_lines, keyword=kwargs['keyword'])
 
     def _get_needed_kwargs(self, dct):
 
         kwargs = deepcopy(self._keys)
         for key, dct_key in self._replace_keys.items():
-            if dct_key not in dct: 
-                raise Exception('Event "%s" needs to be set and called before this Event "%s"' % key, self._name)
+            if dct_key not in dct:
+                raise Exception(('Event "%s" needs to be set ',
+                                'and called before this Event "%s"')
+                                % key, self._name)
             kwargs[key] = dct[dct_key]
             if kwargs[key] is None:
-                raise Exception('Event "%s" needs to be called before this Event "%s"' % key, self._name)
+                raise Exception(('Event "%s" needs to be called ',
+                                'before this Event "%s"')
+                                % key, self._name)
         return kwargs
 
     def trigger(self, iterator, dct):

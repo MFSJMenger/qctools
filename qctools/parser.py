@@ -20,7 +20,8 @@ class BaseConfigQCReader(QCReader):
 
         for key in keys:
             if key not in self._config.keys():
-                raise Exception("'%s' not in %s keys, please specify event" % (key, str(list(self._config.keys()))))
+                raise Exception("'%s' not in %s keys, please specify event"
+                                % (key, str(list(self._config.keys()))))
             self._events[key] = self._config[key]
 
 

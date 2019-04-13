@@ -1,4 +1,3 @@
-from functools import partial
 from collections import OrderedDict
 
 from .fileio import file_reading_iterator_raw
@@ -14,7 +13,7 @@ class QCReader(object):
     def __init__(self, filename, reset=True):
         self._name = filename
         self._reset = reset
-        self._values = dict( (key, None) for key in self._events.keys() )
+        self._values = dict((key, None) for key in self._events.keys())
 
     @property
     def parse(self):
