@@ -40,7 +40,7 @@ def try_function_decorator(msg, subargs=None):
         return _wrapper
     return _inner_decorator
 
-def classmethod_decorator(func):
+def classfunction_decorator(func):
 
     @wraps(func)
     def _wrapper(self, *args, **kwargs):
