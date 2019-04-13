@@ -39,3 +39,11 @@ def try_function_decorator(msg, subargs=None):
                 sys.exit()
         return _wrapper
     return _inner_decorator
+
+def classmethod_decorator(func):
+
+    @wraps(func)
+    def _wrapper(self, *args, **kwargs):
+        return func(*args, **kwargs)
+
+    return _wrapper
