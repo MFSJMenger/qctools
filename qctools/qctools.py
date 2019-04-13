@@ -61,7 +61,6 @@ class QCReader(object):
                 iterator = self._set_iterator()
             # do multiple mapping
             if ('multigrep' in self._elements[key]) and (self._elements[key]['multigrep'] is True):
-                ierr = 0
                 self._values[key] = []
                 while True:
                     iterator, grep, ierr = self._grep(iterator, key, ilen, ishift)
