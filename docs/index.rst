@@ -8,7 +8,6 @@ Welcome to qctools's documentation!
    readme
    installation
    usage
-   modules
    contributing
    authors
    history

@@ -5,7 +5,7 @@ Credits
 Development Lead
 ----------------
 
-* Maximilian Menger <menger.maximilian@gmail.com>
+* Maximilian Menger <maximilian.menger@univie.ac.at>
 
 Contributors
 ------------

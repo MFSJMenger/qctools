@@ -3,7 +3,7 @@
 """Top-level package for qctools."""
 
 __author__ = """Maximilian Menger"""
-__email__ = 'menger.maximilian@gmail.com'
+__email__ = 'maximilian.menger@univie.ac.at'
 __version__ = '0.1.0'
 
 from .qcreader import QCReader

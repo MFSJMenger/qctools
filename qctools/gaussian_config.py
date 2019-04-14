@@ -24,26 +24,30 @@ NAtoms = Event('NAtoms',
                'grep', {'keyword': 'NAtoms=',
                         'ilen': 1,
                         'ishift': 0},
-               func=partial(str_split, idx=1, typ=int))
+               func=str_split,
+               func_kwargs={'idx': 1, 'typ': int})
 # Get NBasis
 NBasis = Event('NBasis',
                'grep', {'keyword': 'NBasis=',
                         'ilen': 1,
                         'ishift': 0},
-               func=partial(str_split, idx=1, typ=int))
+               func=str_split,
+               func_kwargs={'idx': 1, 'typ': int})
 # Get Standard Orientation
 standard_orientation = Event('standard_orientation',
                              'grep', {'keyword': 'Standard orientation:',
                                       'ilen': 'NAtoms',
                                       'ishift': 5},
-                             func=partial(map_by_lines, func=get_crd),
+                             func=map_by_lines,
+                             func_kwargs={'func': get_crd},
                              settings={'multi': True, 'reset': True})
 # Get Input Orientation
 input_orientation = Event('input_orientation',
                           'grep', {'keyword': 'Input orientation:',
                                    'ilen': 'NAtoms',
                                    'ishift': 5},
-                          func=partial(map_by_lines, func=get_crd),
+                          func=map_by_lines,
+                          func_kwargs={'func': get_crd},
                           settings={'multi': True, 'reset': True})
 
 ESCF = Event('ESCF',
@@ -63,9 +67,10 @@ forces = Event('forces',
                'grep', {'keyword': 'Forces (Hartrees/Bohr)',
                         'ilen': 'NAtoms',
                         'ishift': 3},
-               func=partial(map_by_lines,
-                            func=partial(split_line_and_map, start=2, end=5)),
+               func=map_by_lines,
+               func_kwargs={'func': partial(split_line_and_map, start=2, end=5)},
                settings={'multi': True, 'reset': False})
+
 
 _gaussian_events = [
         NAtoms,
