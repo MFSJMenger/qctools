@@ -244,16 +244,20 @@ class Event(object):
             if key not in self._settings:
                 self._settings[key] = self.default_settings[key]
 
+    @property
+    def _events(self):
+        global _events
+        return _events
+
+
     def _choose_event(self, event, kwargs):
         """ choose your event """
 
-        global _events
-
-        if event not in _events:
+        if event not in self._events:
             raise Exception('Event "%s" unknown, please register before usage'
                             % event)
 
-        keys, set_keys, self._func = _events[event]()
+        keys, set_keys, self._func = self._events[event]()
 
         self._keys, self._replace_keys = self._check_keys(set_keys,
                                                           keys, kwargs)
