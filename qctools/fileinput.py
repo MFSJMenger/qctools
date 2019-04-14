@@ -71,47 +71,6 @@ def pygrep_str(text, keyword, length=100, ishift=0, begin=0):
                 istart + ishift + length)
 
 
-def pygrep(text, keyword, length=100, shift=0, begin=0):
-    """ greps part of a text, the fragment Text has lenght characters
-        and is the text in shift characters from the keyword
-        uses the str.find() function of python, begin gives in
-        characters the start where it will start to search for the keyword.
-
-
-        text                = str          ,Text should have the keyword inside
-        keyword             = str          ,One Keyword that is the string
-        length              = int          ,Int or list of ints,
-                                            gives the length in Characters
-                                            of the fragment text
-        shift               = int          ,Gives the shift in Characters
-                                            from the keyword everything can
-                                            be read
-
-        Keywords,Length and Shift need to be of the same number of elements!
-        In the right order! One can use the getParam program
-        to get the right parameters, in a very easy way.
-
-        return             = str           ,part of the text that
-        was greped, with Shift from the Keyword and Lenght Character's
-
-    """
-    #
-    # Searches for keyword in text and returns the
-    # len characters (100=default) starting from the
-    # beginning of the keyword, alternative can shift the print
-    #
-    start = text.find(keyword, begin)
-    if start == -1:
-        print(keyword + " not found in text!")
-        return None, begin
-    if start+shift+length > len(text):
-        return text[start+shift:len(text)], -1
-    else:
-        return (text[start+shift:
-                     start+shift+length],
-                start+shift+length)
-
-
 def partial_string(string, ishift, ilen):
     """ return partial string """
     if len(string) < ishift+ilen:
