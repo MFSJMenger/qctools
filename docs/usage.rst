@@ -11,13 +11,10 @@ Create events:
 Events
 ------
 
-.. automodule:: qctools.events
+.. autofunction:: qctools.events.register_event
+
+Everything is based on the Event class
+
+.. autoclass:: qctools.events.Event
    :members:
-
-
-
-.. automodule:: qctools.qcreader
-   :members:
-
-The :py:func:`enumerate` function can be used for ...
 

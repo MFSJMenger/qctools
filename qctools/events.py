@@ -5,6 +5,142 @@ from .fileinput import pygrep_iterator_lines
 from .functions import identity
 
 
+def event_getter_pygrep():
+    """ Predefined pygrep event based on pygrep_iterator_lines"""
+
+    optional_keys = {
+            'ilen': int,
+            'ishift': int,
+            }
+    defined_keys = ['keyword']
+
+    return optional_keys, defined_keys, pygrep_iterator_lines
+
+
+def _create_getter(dct, lst, func):
+    """ helper to convert dct, list, func into a
+    getter function that returns these values"""
+    def _wrapper():
+        return dct, lst, func
+    return _wrapper
+
+
+def _check_types(iterator, types):
+    for i, entry in enumerate(iterator):
+        if type(entry) != types[i]:
+            raise Exception(("Entry has to be of type '%s'", str(types[i])))
+
+
+def _check_event_getter(getter):
+    """ check getter """
+
+    getter_func = None
+
+    if hasattr(getter, '__call__'):
+        getter_func = getter
+        getter = getter_func()
+
+    if type(getter) not in [tuple, list]:
+        raise Exception("getter needs to be tuple or list, or return these")
+    # check lens
+    if len(getter) != 3:
+        raise Exception(("getter needs to be a tuple/list",
+                             "with exactly 3 entries!"))
+    # check types
+    _check_types(getter[:2], [dict, list])
+    if not hasattr(getter[2], '__call__'):
+        raise Exception("getter[2] has to be callable")
+
+    if getter_func is None:
+        getter_func = _create_getter(getter[0], getter[1], getter[2])
+
+    return getter_func
+
+
+
+def register_event(event_name, getter):
+    """
+    register new event getter
+
+    Args:
+
+        event_name (str):
+                Name of the event that
+
+        getter (function or list/tuple):
+                If list/tuple:
+                    needs to be a list with three entries
+                    (dct, lst, func)
+
+                If function:
+                    a getter function to get informations for the
+                    event. The function should return a tuple:
+                    (dct, lst, func)
+
+                dct (dictionary):
+                    contains all arguments for function
+                    that need to be set with `func_kwargs` and that could
+                    be loaded from data of previous events
+
+                lst (list):
+                    contains all arguments that are taken directly
+                    from `func_kwargs`
+
+                func (function):
+                    is a python function that takes one argument and has to return
+                    a tuple of two values, the first being the actuall output
+                    the second being an error code (integer), with -1 meaning the
+                    event call was not successful.
+
+    Note:
+    -----
+    Register a new possible event to the Event class
+
+
+    Example:
+    --------
+    define a event getter print5, that prints `Value is set to 5`
+    when the event is triggered
+
+    >>> def print5():
+    ...     def prt5(*arg, **kwargs):
+    ...         print("Value is set to 5")
+    ...         return 5, 1
+    ...     return {}, [], prt5
+
+    >>> register_event("prt5", print5)
+
+    >>> prt5 = Event('prt5', 'prt5', {})
+
+    >>> prt5.trigger(1, {})
+    5, 1
+
+    Or as a list
+
+    >>> def prt5(*arg, **kwargs):
+    ...     print("Value is set to 5")
+    ...     return 5, 1
+
+    >>> register_event("prt5", [{}, [], prt5])
+
+    >>> prt5 = Event('prt5', 'prt5', {})
+
+    >>> prt5.trigger(1, {})
+    5, 1
+    """
+
+    global _events
+    _events[event_name] = _check_event_getter(getter)
+
+
+def print_possible_events():
+    """print all registered events"""
+    global _events
+    print("Registered Events:")
+    print(", ".join(_events.keys()))
+    print("******************************")
+
+
 class Event(object):
 
     """
@@ -67,6 +203,7 @@ class Event(object):
     5
     """
 
+
     default_settings = {
         'multi': False,  # call the event multiple times,
                          # till the end of the iterator is reached
@@ -80,7 +217,7 @@ class Event(object):
         """ intialize an event """
         self._name = name
         self._func = None
-        self._set_event(event, event_kwargs)
+        self._choose_event(event, event_kwargs)
         self._process_func = func
         self._process_func_kwargs = func_kwargs
         # initialize settings
@@ -107,13 +244,19 @@ class Event(object):
             if key not in self._settings:
                 self._settings[key] = self.default_settings[key]
 
-    def _set_event(self, event, kwargs):
-        """ set your event """
-        if event == 'grep':
-            self._func = self._pygrep_lines(kwargs)
-        else:
-            raise Exception('Event "%s" unknown, please register it before'
+    def _choose_event(self, event, kwargs):
+        """ choose your event """
+
+        global _events
+
+        if event not in _events:
+            raise Exception('Event "%s" unknown, please register before usage'
                             % event)
+
+        keys, set_keys, self._func = _events[event]()
+
+        self._keys, self._replace_keys = self._check_keys(set_keys,
+                                                          keys, kwargs)
 
     @staticmethod
     def _check_keys(set_keys, optional_set_keys, kwargs):
@@ -137,7 +280,7 @@ class Event(object):
                     argument for that key is provided by the
                     `arg_dct` of the `trigger()` function!
 
-
+        Returns:
 
         """
 
@@ -148,6 +291,7 @@ class Event(object):
             if key not in kwargs:
                 raise Exception('Keyword "%s" needs to be set in grep Event'
                                 % key)
+            keys[key] = kwargs[key]
 
         for key in optional_set_keys:
             if key not in kwargs:
@@ -157,31 +301,16 @@ class Event(object):
                 keys[key] = kwargs[key]
             else:
                 replace_keys[key] = kwargs[key]
+
         return keys, replace_keys
-
-    def _pygrep_lines(self, kwargs):
-        """ predefined pygrep event """
-
-        keys = {'ilen': int,
-                'ishift': int}
-        set_keys = ['keyword']
-
-        self._keys = {}
-        self._replace_keys = {}
-
-        self._keys, self._replace_keys = self._check_keys(set_keys,
-                                                          keys, kwargs)
-
-        return partial(pygrep_iterator_lines, keyword=kwargs['keyword'])
 
     def _get_needed_kwargs(self, dct):
 
         kwargs = deepcopy(self._keys)
         for key, dct_key in self._replace_keys.items():
             if dct_key not in dct:
-                raise Exception(('Event "%s" needs to be set ',
-                                'and called before this Event "%s"')
-                                % key, self._name)
+                raise Exception(('Event "%s" needs to be set ' % key,
+                                'and called before this Event "%s"' % self._name))
             kwargs[key] = dct[dct_key]
             if kwargs[key] is None:
                 raise Exception(('Event "%s" needs to be called ',
@@ -252,3 +381,5 @@ class Event(object):
         if ierr != -1:
             result = self._process_func(result, **self._process_func_kwargs)
         return result, ierr
+
+_events = { 'grep': event_getter_pygrep, }

@@ -4,7 +4,7 @@ from .fileio import file_reading_iterator_raw
 from .utils import classfunction_decorator
 
 
-class QCReader(object):
+class EventHandler(object):
     """Class to read information from ASCII text files"""
 
     _events = OrderedDict()
