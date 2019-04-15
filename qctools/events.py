@@ -2,10 +2,11 @@ from functools import partial
 from copy import deepcopy
 
 from .fileinput import pygrep_iterator_lines
+from .fileinput import pyxgrep_iterator_lines
 from .functions import identity
 
 
-def event_getter_pygrep():
+def event_getter_pygrep(func=pygrep_iterator_lines):
     """ Predefined pygrep event based on pygrep_iterator_lines"""
 
     optional_keys = {
@@ -14,7 +15,7 @@ def event_getter_pygrep():
             }
     defined_keys = ['keyword']
 
-    return optional_keys, defined_keys, pygrep_iterator_lines
+    return optional_keys, defined_keys, func
 
 
 def _create_getter(dct, lst, func):
@@ -58,9 +59,9 @@ def _check_event_getter(getter):
 
 
 
-def register_event(event_name, getter):
+def register_event_type(event_name, getter):
     """
-    register new event getter
+    register new event type
 
     Args:
 
@@ -94,7 +95,7 @@ def register_event(event_name, getter):
 
     Note:
     -----
-    Register a new possible event to the Event class
+    Register a new possible event type to the Event class
 
 
     Example:
@@ -108,7 +109,7 @@ def register_event(event_name, getter):
     ...         return 5, 1
     ...     return {}, [], prt5
 
-    >>> register_event("prt5", print5)
+    >>> register_event_type("prt5", print5)
 
     >>> prt5 = Event('prt5', 'prt5', {})
 
@@ -121,42 +122,57 @@ def register_event(event_name, getter):
     ...     print("Value is set to 5")
     ...     return 5, 1
 
-    >>> register_event("prt5", [{}, [], prt5])
+    >>> register_event_type("prt5", [{}, [], prt5])
 
     >>> prt5 = Event('prt5', 'prt5', {})
 
     >>> prt5.trigger(1, {})
     5, 1
     """
-
-    global _events
-    _events[event_name] = _check_event_getter(getter)
+    _BasicEvent._register_event(event_name,  _check_event_getter(getter))
 
 
 def print_possible_events():
     """print all registered events"""
-    global _events
     print("Registered Events:")
-    print(", ".join(_events.keys()))
+    print(_BasicEvent.get_possible_events())
     print("******************************")
 
+class _BasicEvent(object):
+    """ Basic Class contains all possible event types """
 
-class Event(object):
+    _events = { 
+            'grep': event_getter_pygrep, 
+            'xgrep': partial(event_getter_pygrep, func=pyxgrep_iterator_lines),
+    }
 
+    @property
+    def events(self):
+        return self._events
+
+    @classmethod
+    def _register_event(cls, key, value):
+        cls._events[key] = value
+
+    @classmethod
+    def get_possible_events(cls):
+        return ", ".join(cls._events.keys())
+    
+
+class Event(_BasicEvent):
     """
-
     Basic Event class used for event handlers
 
     Args:
         name (str):
                 Name of the event
 
-        event (str):
+        event_type (str):
                 Type of the event, suported e.g. 'grep'
                 but you can also register your own
 
-        event_kwargs (dct):
-                Arguments for the event function
+        event_type_kwargs (dct):
+                Arguments for the event type specific function
 
         func (function(arg1), optional):
                 Single position argument function,
@@ -211,13 +227,13 @@ class Event(object):
     }
 
     def __init__(self, name,
-                 event, event_kwargs,
+                 event_type, event_type_kwargs,
                  func=identity, func_kwargs={},
                  settings={}):
         """ intialize an event """
         self._name = name
         self._func = None
-        self._choose_event(event, event_kwargs)
+        self._choose_event(event_type, event_type_kwargs)
         self._process_func = func
         self._process_func_kwargs = func_kwargs
         # initialize settings
@@ -244,20 +260,14 @@ class Event(object):
             if key not in self._settings:
                 self._settings[key] = self.default_settings[key]
 
-    @property
-    def _events(self):
-        global _events
-        return _events
-
-
     def _choose_event(self, event, kwargs):
         """ choose your event """
 
-        if event not in self._events:
+        if event not in self.events:
             raise Exception('Event "%s" unknown, please register before usage'
                             % event)
 
-        keys, set_keys, self._func = self._events[event]()
+        keys, set_keys, self._func = self.events[event]()
 
         self._keys, self._replace_keys = self._check_keys(set_keys,
                                                           keys, kwargs)
@@ -385,5 +395,3 @@ class Event(object):
         if ierr != -1:
             result = self._process_func(result, **self._process_func_kwargs)
         return result, ierr
-
-_events = { 'grep': event_getter_pygrep, }

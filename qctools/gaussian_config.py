@@ -19,6 +19,10 @@ def get_crd(line):
             + list(map(float, columns[3:6])))
 
 
+def map_function(iterator, func=identity):    
+    return list(map(func, iterator))
+
+
 # Get NAtoms
 NAtoms = Event('NAtoms',
                'grep', {'keyword': 'NAtoms=',
@@ -35,18 +39,18 @@ NBasis = Event('NBasis',
                func_kwargs={'idx': 1, 'typ': int})
 # Get Standard Orientation
 standard_orientation = Event('standard_orientation',
-                             'grep', {'keyword': 'Standard orientation:',
+                             'xgrep', {'keyword': 'Standard orientation:',
                                       'ilen': 'NAtoms',
                                       'ishift': 5},
-                             func=map_by_lines,
+                             func=map_function,
                              func_kwargs={'func': get_crd},
                              settings={'multi': True, 'reset': True})
 # Get Input Orientation
 input_orientation = Event('input_orientation',
-                          'grep', {'keyword': 'Input orientation:',
+                          'xgrep', {'keyword': 'Input orientation:',
                                    'ilen': 'NAtoms',
                                    'ishift': 5},
-                          func=map_by_lines,
+                          func=map_function,
                           func_kwargs={'func': get_crd},
                           settings={'multi': True, 'reset': True})
 
@@ -64,10 +68,10 @@ normal_termination = Event('normal_termination',
                            func=identity)
 # Forces
 forces = Event('forces',
-               'grep', {'keyword': 'Forces (Hartrees/Bohr)',
+               'xgrep', {'keyword': 'Forces (Hartrees/Bohr)',
                         'ilen': 'NAtoms',
                         'ishift': 3},
-               func=map_by_lines,
+               func=map_function,
                func_kwargs={'func': partial(split_line_and_map, start=2, end=5)},
                settings={'multi': True, 'reset': False})
 

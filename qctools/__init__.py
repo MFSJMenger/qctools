@@ -12,6 +12,6 @@ from .parser import GaussianReader
 # qc configs
 from .gaussian_config import gaussian_config
 #
-from .events import register_event
+from .events import register_event_type
 from .events import print_possible_events
 from .events import Event

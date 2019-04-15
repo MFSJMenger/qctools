@@ -108,12 +108,13 @@ def pygrep_iterator(iterator, keyword, ilen=100, ishift=0, begin=0):
 
 def pygrep_iterator_lines(iterator, keyword, ilen=10, ishift=0):
     """ """
+    assert ishift >= 0
     #
     istart = 0
     #
     out_str = ""
     icount = -1
-    #
+    # check shift
     if ishift == 0:
         istart = 1
     # get keyword
@@ -122,25 +123,78 @@ def pygrep_iterator_lines(iterator, keyword, ilen=10, ishift=0):
             out_str = line
             icount = 1
             break
+    # did not find item in iterator
+    if icount == -1:
+        return (None, -1)
+    # only get first item
+    if istart == 1 and ilen == 1:
+        return (out_str[:-1], 1)
     # skip ishift lines!
     if ishift != 0:
         out_str = ""
-        icount = 1
-        while icount < ishift:
-            try:
-                next(iterator)
-            except StopIteration:
-                icount = -1
-                break
-            icount += 1
-    # if not found return
+        if ishift == 1:
+            pass
+        else:
+            for line in iterator:
+                icount += 1
+                if icount == ishift: 
+                    break
+    else:
+        icount = ishift
+    # if end of file before end of iskip
+    if icount != ishift:
+        return (None, -1)
+    # get all remaining lines
+    for line in iterator:
+        out_str += line
+        istart += 1
+        if istart == ilen:
+            break
+    # return output
+    return out_str[:-1], 1
+
+def pyxgrep_iterator_lines(iterator, keyword, ilen=10, ishift=0):
+    """ """
+    assert ishift >= 0
+    #
+    istart = 0
+    #
+    icount = -1
+    # check shift
+    if ishift == 0:
+        istart = 1
+    # get keyword
+    for line in iterator:
+        if keyword in line:
+            out_str = [line]
+            icount = 1
+            break
+    # did not find item in iterator
     if icount == -1:
         return (None, -1)
-    #
-    for i in range(istart, ilen):
-        try:
-            out_str += next(iterator)
-        except StopIteration:
+    # only get first item
+    if istart == 1 and ilen == 1:
+        return (out_str, 1)
+    # skip ishift lines!
+    if ishift != 0:
+        out_str = []
+        if ishift == 1:
+            pass
+        else:
+            for line in iterator:
+                icount += 1
+                if icount == ishift: 
+                    break
+    else:
+        icount = ishift
+    # if end of file before end of iskip
+    if icount != ishift:
+        return (None, -1)
+    # get all remaining lines
+    for line in iterator:
+        out_str.append(line)
+        istart += 1
+        if istart == ilen:
             break
-    # return but remove last newline
-    return out_str[:-1], 1
+    # return output
+    return out_str, 1
