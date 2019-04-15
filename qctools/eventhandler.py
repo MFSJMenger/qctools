@@ -1,14 +1,13 @@
 from collections import OrderedDict
 
 from .fileio import file_reading_iterator_raw
-from .utils import classfunction_decorator
 
 
 class EventHandler(object):
     """Class to read information from ASCII text files"""
 
     _events = OrderedDict()
-    _get_iterator = classfunction_decorator(file_reading_iterator_raw)
+    _get_iterator = staticmethod(file_reading_iterator_raw)
 
     def __init__(self, filename, reset=True):
         self._name = filename

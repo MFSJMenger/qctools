@@ -3,7 +3,7 @@ from functools import partial
 
 from .events import Event
 from .functions import str_split, identity
-from .functions import split_line_and_map, map_by_lines
+from .functions import split_line_and_map
 
 from .atominfo import atomnumber_to_atomname
 
@@ -19,7 +19,7 @@ def get_crd(line):
             + list(map(float, columns[3:6])))
 
 
-def map_function(iterator, func=identity):    
+def map_function(iterator, func=identity):
     return list(map(func, iterator))
 
 
@@ -40,16 +40,16 @@ NBasis = Event('NBasis',
 # Get Standard Orientation
 standard_orientation = Event('standard_orientation',
                              'xgrep', {'keyword': 'Standard orientation:',
-                                      'ilen': 'NAtoms',
-                                      'ishift': 5},
+                                       'ilen': 'NAtoms',
+                                       'ishift': 5},
                              func=map_function,
                              func_kwargs={'func': get_crd},
                              settings={'multi': True, 'reset': True})
 # Get Input Orientation
 input_orientation = Event('input_orientation',
                           'xgrep', {'keyword': 'Input orientation:',
-                                   'ilen': 'NAtoms',
-                                   'ishift': 5},
+                                    'ilen': 'NAtoms',
+                                    'ishift': 5},
                           func=map_function,
                           func_kwargs={'func': get_crd},
                           settings={'multi': True, 'reset': True})
@@ -69,10 +69,11 @@ normal_termination = Event('normal_termination',
 # Forces
 forces = Event('forces',
                'xgrep', {'keyword': 'Forces (Hartrees/Bohr)',
-                        'ilen': 'NAtoms',
-                        'ishift': 3},
+                         'ilen': 'NAtoms',
+                         'ishift': 3},
                func=map_function,
-               func_kwargs={'func': partial(split_line_and_map, start=2, end=5)},
+               func_kwargs={'func':
+                            partial(split_line_and_map, start=2, end=5)},
                settings={'multi': True, 'reset': False})
 
 

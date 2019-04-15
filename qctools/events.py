@@ -17,6 +17,7 @@ def event_getter_pygrep(func=pygrep_iterator_lines):
 
     return optional_keys, defined_keys, func
 
+
 def pass_function(*args, **kwargs):
     return None, 1
 
@@ -49,7 +50,7 @@ def _check_event_getter(getter):
     # check lens
     if len(getter) != 3:
         raise Exception(("getter needs to be a tuple/list",
-                             "with exactly 3 entries!"))
+                         "with exactly 3 entries!"))
     # check types
     _check_types(getter[:2], [dict, list])
     if not hasattr(getter[2], '__call__'):
@@ -59,7 +60,6 @@ def _check_event_getter(getter):
         getter_func = _create_getter(getter[0], getter[1], getter[2])
 
     return getter_func
-
 
 
 def register_event_type(event_name, getter):
@@ -91,10 +91,10 @@ def register_event_type(event_name, getter):
                     from `func_kwargs`
 
                 func (function):
-                    is a python function that takes one argument and has to return
-                    a tuple of two values, the first being the actuall output
-                    the second being an error code (integer), with -1 meaning the
-                    event call was not successful.
+                    is a python function that takes one argument and has to
+                    return a tuple of two values, the first being the actuall
+                    output the second being an error code (integer), with -1
+                    meaning the event call was not successful.
 
     Note:
     -----
@@ -141,11 +141,12 @@ def print_possible_events():
     print(_BasicEvent.get_possible_events())
     print("******************************")
 
+
 class _BasicEvent(object):
     """ Basic Class contains all possible event types """
 
-    _events = { 
-            'grep': event_getter_pygrep, 
+    _events = {
+            'grep': event_getter_pygrep,
             'xgrep': partial(event_getter_pygrep, func=pyxgrep_iterator_lines),
             'pass': _check_event_getter([{}, [], pass_function]),
     }
@@ -161,7 +162,7 @@ class _BasicEvent(object):
     @classmethod
     def get_possible_events(cls):
         return ", ".join(cls._events.keys())
-    
+
 
 class Event(_BasicEvent):
     """
@@ -222,7 +223,6 @@ class Event(_BasicEvent):
     >>> print(result)
     5
     """
-
 
     default_settings = {
         'multi': False,  # call the event multiple times,
@@ -328,7 +328,8 @@ class Event(_BasicEvent):
         for key, dct_key in self._replace_keys.items():
             if dct_key not in dct:
                 raise Exception(('Event "%s" needs to be set ' % key,
-                                'and called before this Event "%s"' % self._name))
+                                 'and called before this Event "%s"'
+                                 % self._name))
             kwargs[key] = dct[dct_key]
             if kwargs[key] is None:
                 raise Exception(('Event "%s" needs to be called ',
@@ -399,5 +400,6 @@ class Event(_BasicEvent):
         if ierr != -1:
             result = self._process_func(result, **self._process_func_kwargs)
         return result, ierr
+
 
 reset_event = Event('reset', 'pass', {}, settings={'reset': True})

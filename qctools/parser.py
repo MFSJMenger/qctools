@@ -1,7 +1,7 @@
-from collections import OrderedDict
 from .eventhandler import EventHandler
 # configs
 from .gaussian_config import gaussian_config
+
 
 class BaseEventReader(EventHandler):
 
@@ -22,7 +22,6 @@ class BaseEventReader(EventHandler):
     @property
     def keys(self):
         return self._keys
-
 
 
 class GaussianReader(BaseEventReader):

@@ -137,7 +137,7 @@ def pygrep_iterator_lines(iterator, keyword, ilen=10, ishift=0):
         else:
             for line in iterator:
                 icount += 1
-                if icount == ishift: 
+                if icount == ishift:
                     break
     else:
         icount = ishift
@@ -152,6 +152,7 @@ def pygrep_iterator_lines(iterator, keyword, ilen=10, ishift=0):
             break
     # return output
     return out_str[:-1], 1
+
 
 def pyxgrep_iterator_lines(iterator, keyword, ilen=10, ishift=0):
     """ """
@@ -183,7 +184,7 @@ def pyxgrep_iterator_lines(iterator, keyword, ilen=10, ishift=0):
         else:
             for line in iterator:
                 icount += 1
-                if icount == ishift: 
+                if icount == ishift:
                     break
     else:
         icount = ishift
