@@ -8,6 +8,7 @@ Welcome to qctools's documentation!
    readme
    installation
    usage
+   src_documentation
    contributing
    authors
    history
