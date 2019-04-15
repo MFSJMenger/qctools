@@ -40,9 +40,9 @@ Create own events::
     from qctools import Event
 
     NewEvent = Event('newevent', 
-                     event_type, event_kwargs,
-                     post_process_function,
-                     post_process_function_kwargs,
+                     event_type, event_type_kwargs,
+                     func=post_process_function,
+                     func_args=post_process_function_kwargs,
                      )
 
 e.g. get natoms from gaussian log file::
@@ -55,7 +55,54 @@ e.g. get natoms from gaussian log file::
                    func=str_split,
                    func_kwargs={'idx': 1, 'typ': int})
 
+    forces = Event('forces',
+                   'xgrep', {'keyword': 'Forces (Hartrees/Bohr)',
+                            'ilen': 'NAtoms',
+                            'ishift': 3},
+                   func=map_function,
+                   func_kwargs={'func': partial(split_line_and_map, start=2, end=5)},
+                   settings={'multi': True, 'reset': False})
 
-predefined currently only `grep` is defined as event_type
+
+Event Types:
+~~~~~~~~~~~~
+
+Predefined event types:
+
+'grep'::
+
+    kwargs: 
+
+        keyword (str):
+            defines the keyword to grep for
+
+        ilen (int):
+            how many lines of the file to return
+
+        ishift (int):
+            how many lines starting from the keyword to skip
+
+    returns:
+        
+        string (str):
+            Context of the `ilen` lines
+            
+'xgrep'::
+
+    kwargs: 
+
+        keyword (str):
+            defines the keyword to grep for
+
+        ilen (int):
+            how many lines of the file to return
+
+        ishift (int):
+            how many lines starting from the keyword to skip
+
+    returns:
+        
+        list (lst):
+            List of the `ilen` lines
 
 

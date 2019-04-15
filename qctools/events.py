@@ -371,7 +371,7 @@ class Event(_BasicEvent):
             >>> result, ierr = NAtoms.trigger(Example_data)
             >>> print(result)
             5
-            """
+        """
         kwargs = self._get_needed_kwargs(arg_dct)
         if self._settings['multi'] is False:
             return self._trigger(iterator, kwargs)
