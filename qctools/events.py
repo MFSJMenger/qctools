@@ -17,6 +17,9 @@ def event_getter_pygrep(func=pygrep_iterator_lines):
 
     return optional_keys, defined_keys, func
 
+def pass_function(*args, **kwargs):
+    return None, 1
+
 
 def _create_getter(dct, lst, func):
     """ helper to convert dct, list, func into a
@@ -144,6 +147,7 @@ class _BasicEvent(object):
     _events = { 
             'grep': event_getter_pygrep, 
             'xgrep': partial(event_getter_pygrep, func=pyxgrep_iterator_lines),
+            'pass': _check_event_getter([{}, [], pass_function]),
     }
 
     @property
@@ -395,3 +399,5 @@ class Event(_BasicEvent):
         if ierr != -1:
             result = self._process_func(result, **self._process_func_kwargs)
         return result, ierr
+
+reset_event = Event('reset', 'pass', {}, settings={'reset': True})
