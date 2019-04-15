@@ -15,6 +15,10 @@ class EventHandler(object):
         self._reset = reset
         self._values = dict((key, None) for key in self._events.keys())
 
+    @classmethod
+    def add_event(cls, name, event):
+        cls._events[name] = event
+
     @property
     def parse(self):
         self._parse_file()

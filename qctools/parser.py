@@ -17,7 +17,7 @@ class BaseEventReader(EventHandler):
         for key in keys:
             if key not in self._events.keys():
                 raise Exception("'%s' not in %s keys, please specify event"
-                                % (key, str(list(self._config.keys()))))
+                                % (key, str(list(self._events.keys()))))
 
     @property
     def keys(self):
