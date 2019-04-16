@@ -1,28 +1,39 @@
-from .eventhandler import EventHandler
-# configs
+from functools import partial
+# Base Classes 
+from .events import register_event_type, Event
+from .eventhandler import BaseEventFileReader
+from .eventhandler import generate_event_class
+# Configs
 from .gaussian_config import gaussian_config
+from .orca_config import orca_config
 
 
-class BaseEventReader(EventHandler):
+def get_gaussian_block(iterator, iblock=0):
 
-    def __init__(self, filename, keys, reset=True):
+    icount = 0
+    out = []
 
-        self._check_all_events(keys)
-        self._keys = keys
-        super(BaseEventReader, self).__init__(filename, reset=reset)
-        self.parse
+    for line in iterator:
+        if line.strip() == "":
+            icount += 1
+            continue
+        if icount == iblock:
+            out.append(line)
 
-    def _check_all_events(self, keys):
+    if out != "":
+        return out[1:], 1
+    return None, -1
 
-        for key in keys:
-            if key not in self._events.keys():
-                raise Exception("'%s' not in %s keys, please specify event"
-                                % (key, str(list(self._events.keys()))))
+register_event_type("get_gaussian", [{"iblock": int}, [], get_gaussian_block])
 
-    @property
-    def keys(self):
-        return self._keys
+get_coordinate_section = Event('coords', 
+                               'get_gaussian', {'iblock': 2})
 
+generate_filereader = partial(generate_event_class, BaseClass=BaseEventFileReader)
 
-class GaussianReader(BaseEventReader):
-    _events = gaussian_config
+# Gaussian
+GaussianReader = generate_filereader('GaussianReader', gaussian_config)
+GaussianInputReader = generate_filereader('GaussianInputParser', 
+        {'coords': get_coordinate_section})
+# Orca
+OrcaReader = generate_filereader("OrcaReader", orca_config)
