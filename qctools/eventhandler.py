@@ -9,6 +9,7 @@ class EventHandler(object):
     def __init__(self, reset=True):
         self._reset = reset
         self._values = dict((key, None) for key in self.keys)
+        self._ignore_keys = []
 
     @property
     def filename(self):
@@ -45,10 +46,14 @@ class EventHandler(object):
         """Post process the data in the event"""
         # post process data
         for key in self._values:
+            if key in self._ignore_keys:
+                continue
             event = self._events[key]
             event.post_process(self._values[key])
         # delete keys that are not needed
         for key in self._values:
+            if key in self._ignore_keys:
+                continue
             if event.delete is True:
                 del self._values[key]
 
@@ -60,7 +65,6 @@ class EventHandler(object):
         self._post_process()
 
     def __getitem__(self, key):
-        assert key in self.keys
         return self._values[key]
 
 
@@ -76,6 +80,7 @@ class BaseEventFileReader(EventHandler):
         self._keys = keys
         super(BaseEventFileReader, self).__init__(reset=reset)
         for key in default_values:
+            self._ignore_keys.append(key)
             self._values[key] = default_values[key]
         self.perform_events
 
@@ -86,6 +91,10 @@ class BaseEventFileReader(EventHandler):
     @property
     def keys(self):
         return self._keys
+
+    @property
+    def all_keys(self):
+        return self._keys + self._ignore_keys
 
     def _set_passed_object(self):
         """Define an Python object that is handed to all events"""
