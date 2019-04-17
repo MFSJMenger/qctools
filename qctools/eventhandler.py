@@ -69,12 +69,14 @@ class BaseEventFileReader(EventHandler):
 
     _iterator = staticmethod(file_reading_iterator_raw)
 
-    def __init__(self, filename, keys, reset=True):
+    def __init__(self, filename, keys, default_values={}, reset=True):
 
         self._name = filename
         self._check_all_events(keys)
         self._keys = keys
         super(BaseEventFileReader, self).__init__(reset=reset)
+        for key in default_values:
+            self._values[key] = default_values[key]
         self.perform_events
 
     @property
