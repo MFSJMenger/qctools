@@ -7,7 +7,7 @@ __version__ = '0.1.0'
 
 from .parser import generate_filereader
 from .parser import GaussianReader
-from .parser import OrcaReader
+#from .parser import OrcaReader
 # add events and show possible event types
 from .events import register_event_type
 from .events import print_possible_events

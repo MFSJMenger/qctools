@@ -5,7 +5,7 @@ from .eventhandler import BaseEventFileReader
 from .eventhandler import generate_event_class
 # Configs
 from .gaussian_config import gaussian_config
-from .orca_config import orca_config
+#from .orca_config import orca_config
 
 
 def get_gaussian_block(iterator, iblock=0):
@@ -36,4 +36,4 @@ GaussianReader = generate_filereader('GaussianReader', gaussian_config)
 GaussianInputReader = generate_filereader('GaussianInputParser', 
         {'coords': get_coordinate_section})
 # Orca
-OrcaReader = generate_filereader("OrcaReader", orca_config)
+#OrcaReader = generate_filereader("OrcaReader", orca_config)
