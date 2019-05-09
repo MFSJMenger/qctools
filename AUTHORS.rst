@@ -10,4 +10,11 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+Why not be the first?
+
+Thanks to:
+----------
+
+* Boris Maryasin
+* Gustavo Cardenas
+
