@@ -54,7 +54,7 @@ Read natoms from Gaussian Output file:
 
 >>> gauout = GaussianReader("h2o.log", ["NAtoms", "forces"])
 >>> gauout["NAtoms"] 
-5
+3
 
 =======
 Credits
@@ -63,7 +63,7 @@ Credits
 Development Lead
 ----------------
 
-* Maximilian Menger <maximilian.menger@univie.ac.at>
+* Maximilian Menger
 
 Contributors
 ------------
