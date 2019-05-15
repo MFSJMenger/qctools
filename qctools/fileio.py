@@ -64,3 +64,37 @@ def file_reading_iterator_raw(fileName, options='r'):
                 break
             # return line
             yield line
+
+class FileReadingIterator(object):
+    """generates an iterator to loop over the lines of a file
+    also is a context manager at the same time 
+    """
+
+    def __init__(self, filename, options='r'):
+        self.f = open(filename, options)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+    @property
+    def filehandle(self):
+        return self.f
+
+    def __del__(self):            
+        if not self.f.closed:
+            self.f.close()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return self.next()
+
+    def next(self):
+        line = self.f.readline()
+        if not line:
+            raise StopIteration
+        return line
