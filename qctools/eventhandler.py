@@ -11,13 +11,12 @@ class EventHandler(object):
         self._values = dict((key, None) for key in self.keys)
         self._ignore_keys = []
 
-    @property
-    def filename(self):
-        return self._name
-
     @classmethod
     def add_event(cls, name, event):
         cls._events[name] = event
+
+    def __getitem__(self, key):
+        return self._values.get(key, None)
 
     @property
     def keys(self):
@@ -27,7 +26,7 @@ class EventHandler(object):
     def perform_events(self):
         self._loop_over_events()
 
-    def _set_passed_object(self):
+    def _initialize_passed_object(self):
         """Define an Python object that is handed to all events"""
         return None
 
@@ -35,11 +34,11 @@ class EventHandler(object):
         event = self._events[key]
         # reset iterator before event call
         if event.reset is True:
-            passed_obj = self._set_passed_object()
+            passed_obj = self._initialize_passed_object()
         self._values[key], ierr = event.trigger(passed_obj, self._values)
         # reset iterator after event call
         if ierr == -1 and self._reset is True:
-            passed_obj = self._set_passed_object()
+            passed_obj = self._initialize_passed_object()
         return passed_obj, ierr
 
     def _post_process(self):
@@ -59,13 +58,10 @@ class EventHandler(object):
 
     def _loop_over_events(self):
         """Main event loop"""
-        passed_obj = self._set_passed_object()
+        passed_obj = self._initialize_passed_object()
         for key in self.keys:
             passed_obj, ierr = self._trigger_event(passed_obj, key)
         self._post_process()
-
-    def __getitem__(self, key):
-        return self._values[key]
 
 
 class BaseEventFileReader(EventHandler):
@@ -96,7 +92,7 @@ class BaseEventFileReader(EventHandler):
     def all_keys(self):
         return self._keys + self._ignore_keys
 
-    def _set_passed_object(self):
+    def _initialize_passed_object(self):
         """Define an Python object that is handed to all events"""
         return self._iterator(self._name)
 

@@ -2,6 +2,10 @@
 
 class CustomErrorMsg(Exception):
 
+    def __init__(self, mgs):
+        self.custom_error_msg = msg
+
+
     def __str__(self):
         return self.custom_error_msg
 
@@ -24,16 +28,13 @@ class MissingEventKeyword(CustomErrorMsg):
 
 class MissingEvent(CustomErrorMsg):
 
-    def __init__(self, previous_event, current_event):
-        self.custom_error_msg = (('Event "%s" needs to be' % previous_event,
-                                  ' set and called before this Event "%s"'
-                                  % current_event))
-
+    def __init__(self, event):
+        text = """Event '%s' needs to be set """ 
+        self.custom_error_msg = text % (event) 
 
 class MissingEventCall(CustomErrorMsg):
 
     def __init__(self, previous_event, current_event):
-        self.custom_error_msg = (('Event "%s" needs to be' % previous_event,
-                                  ' called before this Event "%s"'
-                                  % current_event))
+        text = """Event '%s' needs to be set and called before Event '%s'""" 
+        self.custom_error_msg = text % (previous_event, current_event) 
 

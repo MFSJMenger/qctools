@@ -428,7 +428,7 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
         kwargs = deepcopy(self._keys)
         for key, dct_key in self._replace_keys.items():
             if dct_key not in dct:
-                raise MissingEvent(key, self._name)
+                raise MissingEvent(key)
             kwargs[key] = dct[dct_key]
             if kwargs[key] is None:
                 raise MissingEventCall(key, self._name)
