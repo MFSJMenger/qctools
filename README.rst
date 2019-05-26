@@ -18,7 +18,7 @@ Python tools for quantum chemists
 Features
 --------
 
-Define Event Handlers for simple parsing of Quantum Chemistry Source Code
+Define Event Handlers for simple parsing of Quantum Chemistry Output
 
 Example:
 

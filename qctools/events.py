@@ -346,9 +346,21 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
     def reset(self):
         return self._settings['reset']
 
+    @reset.setter
+    def reset(self, value):
+        self._settings['reset'] = value
+
     @property
     def delete(self):
         return self._settings['delete']
+
+    @property
+    def multi(self):
+        return self._settings['multi']
+
+    @multi.setter
+    def multi(self, value):
+        self._settings['multi'] = value
 
     @property
     def event_type(self):
@@ -423,6 +435,7 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
 
         return keys, replace_keys
 
+
     def _get_needed_kwargs(self, dct):
 
         kwargs = deepcopy(self._keys)
@@ -475,7 +488,7 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
             5
         """
         kwargs = self._get_needed_kwargs(arg_dct)
-        if self._settings['multi'] is False:
+        if self.multi is False:
             return self._trigger(passed_value, kwargs)
         else:
             return self._multi_trigger(passed_value, kwargs)
@@ -498,5 +511,50 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
             result = self._process_func(result, **self._process_func_kwargs)
         return result, ierr
 
+
+class JoinedEvent(object):
+
+    def __init__(self, events):
+        self._events = events
+        self._reset_events()
+
+    @property
+    def reset(self):
+        return False
+    
+    @property
+    def delete(self):
+        return False
+
+    def post_process(self, value):
+        return value
+
+    @property
+    def events(self):
+        return self._events
+
+    def _reset_events(self):
+        #
+        for event in self.events:
+            event.multi = False
+            event.reset = False
+
+    def trigger(self, passed_value, arg_dct):
+        return self._trigger(passed_value, arg_dct)
+
+    def _trigger(self, passed_value, arg_dct):
+        results = dict((event.name, []) for event in self.events)
+        while True:
+            for event in self.events:
+                result, ierr = event.trigger(passed_value, arg_dct)
+                if ierr == 1:
+                    results[event.name].append(result)
+            if ierr == -1:
+                break
+        return results, ierr
+
+
+def join_events(*args):
+    return JoinedEvent(args)
 
 reset_event = Event('reset', 'pass', {}, settings={'reset': True})
