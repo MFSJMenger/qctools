@@ -33,7 +33,7 @@ cppgrep = Extension('qctools.cppgrep',
                     sources=["src/cppgrep.pyx", "src/filehandler.cpp"],
                     include_dirs=[np.get_include(), ljoin("include")],
                     language="c++",
-                    extra_compile_args=['-std=c++11'],
+                    extra_compile_args=['-std=c++11', "-O3"],
                     extra_link_args=['-L/usr/lib/x86_64-linux-gnu/'], # in case -lpthread etc. are not found!
 )
 
