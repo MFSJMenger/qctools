@@ -1,4 +1,5 @@
 from .fileio import file_reading_iterator_raw
+from .cppgrep import Iterator
 
 
 class EventHandler(object):
@@ -103,5 +104,12 @@ class BaseEventFileReader(EventHandler):
                 raise Exception("'%s' not in %s keys, please specify event"
                                 % (key, str(list(self._events.keys()))))
 
-def generate_event_class(name, possible_events, BaseClass=BaseEventFileReader):
+class EventFileReader(BaseEventFileReader):
+
+    def _initialize_passed_object(self):
+        """Define an Python object that is handed to all events"""
+        return Iterator(self._name)
+
+
+def generate_event_class(name, possible_events, BaseClass=EventFileReader):
     return type(name, (BaseClass, ), {'_events': possible_events})

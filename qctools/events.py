@@ -7,6 +7,7 @@ from .fileinput import pyxgrep_iterator_lines
 from .functions import identity
 from .functions import str_split, str_split_multi
 from .functions import map_function_by_lines, map_function
+from .functions import only_first_element
 # Exceptions
 from .exceptions import UnkownProcessFunction, UnkownEvent
 from .exceptions import MissingEventKeyword
@@ -41,6 +42,19 @@ def event_getter_join():
 
     return keyword_args, args, join_events
 
+
+def event_getter_cppgrep():
+    keyword_args = {
+            'ilen': int,
+            'ishift': int,
+            }
+
+    args = ['keyword']
+
+    def cppgrep(iterator, keyword, ilen=1, ishift=0):
+        return iterator.grep(keyword, ilen, ishift)
+
+    return keyword_args, args, cppgrep
 
 def pass_function(*args, **kwargs):
     return None, 1
@@ -172,6 +186,7 @@ class _BasicEvent(object):
     _events = {
             'grep': event_getter_pygrep,
             'xgrep': partial(event_getter_pygrep, func=pyxgrep_iterator_lines),
+            'cppgrep': event_getter_cppgrep,
             'pass': _check_event_getter([{}, [], pass_function]),
             '__joined_event' : ''
     }
@@ -195,7 +210,9 @@ class _BasicEventProcessFunctions(object):
     predefined_functions = {
             'split': {'func': ['idx', str_split, str_split_multi],
                       'grep': [map_function_by_lines, False],
-                      'xgrep': [map_function, True],}
+                      'xgrep': [map_function, True],
+                      'cppgrep': [map_function, True],
+                      }
             }
 
     @classmethod
@@ -212,11 +229,20 @@ class _BasicEventProcessFunctions(object):
             bylines = func_kwargs['bylines']
             del func_kwargs['bylines']
 
+        if 'only_first' in func_kwargs and bylines is True:
+            del func_kwargs['only_first']
+            func_kwargs = {'func': partial(line_func, **func_kwargs)}
+            return only_first_element, func_kwargs
+
+
+
         if bylines is True:
             func_kwargs = {'func': partial(line_func, **func_kwargs)}
             if event_type == 'grep':
                 func = map_function_by_lines
             elif event_type == 'xgrep':
+                func = map_function
+            elif event_type == 'cppgrep':
                 func = map_function
         else:
             func = line_func
