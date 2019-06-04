@@ -13,7 +13,12 @@ def test_gaussian_reader_default():
     assert val["NAtoms"] == 10
 
 
-def test_gaussian_reader_default_value():
-    """add a default value and check for it"""
-    val = GaussianReader(h2o, [], {"NAtoms": 10})
-    assert val["NAtoms"] == 10
+def test_gaussian_reader_natoms():
+    """read natoms"""
+    val = GaussianReader(h2o, ["NAtoms"])
+    assert val["NAtoms"] == 3
+
+
+def test_gaussian_reader_forces():
+    val = GaussianReader(h2o, ["NAtoms", "forces"])
+    assert len(val["forces"]) == 7
