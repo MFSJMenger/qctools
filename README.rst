@@ -29,9 +29,9 @@ in the Gaussian output file:
 
 .Gaussian Log File 
 --------------------------------------------------------------------
->>>       nuclear repulsion energy         9.3135745052 Hartrees.
-... NAtoms=    3 NActive=    3 NUniq=    2 SFac= 2.25D+00 NAtFMM=   50 NAOKFM=F Big=F
-... One-electron integrals computed using PRISM.
+       nuclear repulsion energy         9.3135745052 Hartrees.
+ NAtoms=    3 NActive=    3 NUniq=    2 SFac= 2.25D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
 --------------------------------------------------------------------
 
 the event should do the following:
@@ -66,12 +66,12 @@ For the Forces the event should look the following:
 
 .Gaussian Log File 
 --------------------------------------------------------------------
->>> Center     Atomic                   Forces (Hartrees/Bohr)
-... Number     Number              X              Y              Z
-... -------------------------------------------------------------------
-...      1        8           0.000000000    0.000000000    0.005485119
-...      2        1           0.000000000    0.017353174   -0.002742559
-...      3        1           0.000000000   -0.017353174   -0.002742559
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        8           0.000000000    0.000000000    0.005485119
+      2        1           0.000000000    0.017353174   -0.002742559
+      3        1           0.000000000   -0.017353174   -0.002742559
 --------------------------------------------------------------------
 
 
