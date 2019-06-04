@@ -32,16 +32,18 @@ Read natoms from Gaussian Output file:
 ...                'grep', {'keyword': 'NAtoms=',
 ...                         'ilen': 1,
 ...                         'ishift': 0},
-...                func=str_split, idx=1, typ=int)
-...                func_kwargs={'idx': 1, 'typ': int})
+...                func='split',
+...                func_kwargs={'idx': 1, 'typ': int}
+...)
 
 >>> forces = Event('forces',
 ...                'xgrep', {'keyword': 'Forces (Hartrees/Bohr)',
 ...                          'ilen': 'NAtoms',
 ...                          'ishift': 3},
 ...                func='split',
-...                func_kwargs={'idx': [2, 3, 4], 'typ': [float, float, float], 'bylines': True},
-...                settings={'multi': False, 'reset': False})
+...                func_kwargs={'idx': [2, 3, 4], 'typ': [float, float, float]},
+...                settings={'multi': False},
+...)
 
 2. Step: Add the new event to an existing Event Handler
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -55,6 +57,8 @@ Read natoms from Gaussian Output file:
 >>> gauout = GaussianReader("h2o.log", ["NAtoms", "forces"])
 >>> gauout["NAtoms"] 
 3
+>>> gauout["forces"]
+[[0.0,0.0,0.005485119],[0.0,0.017353174,-0.002742559],[0.0,-0.017353174,-0.002742559]]
 
 =======
 Credits
