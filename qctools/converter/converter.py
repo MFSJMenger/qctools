@@ -5,11 +5,12 @@ from functools import partial
 from .container import ConversionContainer
 from .decorators import with_repr
 
+
 def _c_direct(val, conversion, to=True):
     """val: float, value that is to be converted
        conversion: float, conversion factor
 
-       return: 
+       return:
            float, converted value
 
     """
@@ -18,14 +19,16 @@ def _c_direct(val, conversion, to=True):
     else:
         return val*(1.0/conversion)
 
+
 def _c_inverse(val, conversion):
     """val: float, value that is to be converted
        conversion: float, conversion factor
 
-       return: 
+       return:
            float, converted value
     """
     return conversion/val
+
 
 def _convert_to_reference(tin, value):
     if tin.relation == 'direct':
@@ -34,6 +37,7 @@ def _convert_to_reference(tin, value):
         return _c_inverse(value, tin.factor)
     else:
         return Exception("relation can only be 'direct' or 'inverse'!")
+
 
 def _convert_from_reference(tout, value):
     if tout.relation == 'direct':
@@ -45,7 +49,7 @@ def _convert_from_reference(tout, value):
 
 
 class Converter(object):
-    
+
     def __init__(self, container):
         self._container = container
 
@@ -96,7 +100,8 @@ class Converter(object):
             elif intermediate.relation == 'inverse' or relation == 'inverse':
                 self._container[name] = (factor*intermediate.factor, 'inverse')
             else:
-                raise Exception("relation can only be in ['inverse', 'direct']")
+                raise Exception(
+                        "relation can only be in ['inverse', 'direct']")
 
     def _converter_compose(self, tin, tout):
         """ compose the function to form the final converter function """
@@ -104,9 +109,8 @@ class Converter(object):
         funcIn = partial(_convert_to_reference, self[tin])
         funcOut = partial(_convert_from_reference, self[tout])
 
-        @with_repr(lambda x:
-                  "<ConverterFunction: '%s'  from  '%s' to '%s'>"
-                  % (typ, tin, tout))
+        @with_repr(lambda x: "<ConverterFunction: '%s'  from  '%s' to '%s'>"
+                             % (self.name, tin, tout))
         def _inner_func(data, in_func=funcIn, out_func=funcOut):
             return out_func(in_func(data))
 

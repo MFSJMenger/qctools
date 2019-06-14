@@ -14,7 +14,6 @@ class UnknownUnitError(Exception):
 class ConversionContainer(object):
 
     named_tuple = Conversion
-    ntuple_ref = named_tuple(factor=1.0, relation="")
 
     def __init__(self, name, ref, dct):
         self.name = name
@@ -36,7 +35,8 @@ class ConversionContainer(object):
     def __str__(self):
         return ("\nConversionContainer('%s')\n" % (self.name)
                 + "----------------------------------------------------\n"
-                + "".join([ "Unit '%8s': %25s\n" % (key, value) for key, value in self.items() ])
+                + "".join(["Unit '%8s': %25s\n" % (key, value)
+                           for key, value in self.items()])
                 + "----------------------------------------------------\n")
 
     def __iter__(self):
@@ -46,7 +46,7 @@ class ConversionContainer(object):
         return self
 
     def __next__(self):
-        if self._count < self._nmax: 
+        if self._count < self._nmax:
             result = self._lkeys[self._count]
             self._count += 1
             return result
@@ -55,16 +55,19 @@ class ConversionContainer(object):
     def __getitem__(self, key):
         return_value = self.values.get(key, None)
         if return_value is None:
-            raise UnknownUnitError("Unknown Unit '%s' for type '%s'" % (key, self.name))
+            raise UnknownUnitError(
+                    "Unknown Unit '%s' for type '%s'" % (key, self.name))
         return return_value
 
     def __setitem__(self, key, value):
-        if type(value) != type(self.ntuple_ref):
+        if not isinstance(self.named_tuple):
             if type(value) in [tuple, list]:
-                self.values[key] = self.named_tuple(factor=value[0], relation=value[1])
+                self.values[key] = self.named_tuple(
+                        factor=value[0],
+                        relation=value[1])
             else:
                 raise TypeError('entries need to be either ')
-        else: 
+        else:
             self.values[key] = value
 
     def _parse_dct(self, in_dct):
@@ -72,9 +75,11 @@ class ConversionContainer(object):
         if 'reference' in dct:
             del dct['reference']
         for key, value in dct.items():
-            if type(value) != type(self.ntuple_ref):
+            if not isinstance(self.named_tuple):
                 if type(value) in [tuple, list]:
-                    dct[key] = self.named_tuple(factor=value[0], relation=value[1])
+                    dct[key] = self.named_tuple(
+                            factor=value[0],
+                            relation=value[1])
                 else:
                     raise TypeError('entries need to be either ')
-        return dct 
+        return dct
