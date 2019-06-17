@@ -29,8 +29,8 @@ register_event_type("get_gaussian", [{"iblock": int}, [], get_gaussian_block])
 get_coordinate_section = Event('coords', 
                                'get_gaussian', {'iblock': 2})
 
+# function
 generate_filereader = partial(generate_event_class, BaseClass=BaseEventFileReader)
-
 # Gaussian
 GaussianReader = generate_filereader('GaussianReader', gaussian_config)
 GaussianInputReader = generate_filereader('GaussianInputParser', 

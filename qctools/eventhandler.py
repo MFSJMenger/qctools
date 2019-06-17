@@ -1,4 +1,5 @@
 from .fileio import file_reading_iterator_raw
+from .events import _CoreEvent
 
 
 class EventHandler(object):
@@ -11,15 +12,22 @@ class EventHandler(object):
         self._values = dict((key, None) for key in self.keys)
         self._ignore_keys = []
 
-    @classmethod
-    def add_event(cls, name, event):
-        cls._events[name] = event
-
     def __getitem__(self, key):
         return self._values.get(key, None)
 
+    @classmethod
+    def add_event(cls, name, event):
+        """register an event to an event handler"""
+        if isinstance(event, _CoreEvent):
+            cls._events[name] = event
+        else:
+            raise TypeError("Added event '%s' needs to be an event!" % name)
+
     @property
     def keys(self):
+        return list(self._events.keys())
+
+    def event_keys(self):
         return self._events.keys()
 
     @property
@@ -31,6 +39,7 @@ class EventHandler(object):
         return None
 
     def _trigger_event(self, passed_obj, key):
+        """Triger a specific event and do error handling"""
         event = self._events[key]
         # reset iterator before event call
         if event.reset is True:
