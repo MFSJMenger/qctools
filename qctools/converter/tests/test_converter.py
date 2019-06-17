@@ -38,8 +38,8 @@ def test_conversion_direct(example_converter, random_value):
 def test_add_entry_direct(example_converter, random_value):
     factor = example_converter.container['eV'].factor
     example_converter.add_entry('ex1', factor, 'direct')
-    assert round(random_value, 8) == round(example_converter.convert(
-                                              random_value, 'ex1', 'eV'), 8)
+    assert round(random_value, 7) == round(example_converter.convert(
+                                              random_value, 'ex1', 'eV'), 7)
 
 
 def test_add_entry_direct_via_second_direct_element(example_converter):

@@ -60,7 +60,7 @@ class ConversionContainer(object):
         return return_value
 
     def __setitem__(self, key, value):
-        if not isinstance(self.named_tuple):
+        if not isinstance(value, self.named_tuple):
             if type(value) in [tuple, list]:
                 self.values[key] = self.named_tuple(
                         factor=value[0],
@@ -75,7 +75,7 @@ class ConversionContainer(object):
         if 'reference' in dct:
             del dct['reference']
         for key, value in dct.items():
-            if not isinstance(self.named_tuple):
+            if not isinstance(value, self.named_tuple):
                 if type(value) in [tuple, list]:
                     dct[key] = self.named_tuple(
                             factor=value[0],
