@@ -358,6 +358,14 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
     def multi(self):
         return self._settings['multi']
 
+    @property
+    def nmax(self):
+        return self._settings.get('nmax', -1)
+
+    @nmax.setter
+    def nmax(self, value):
+        self._settings['nmax'] = value
+
     @multi.setter
     def multi(self, value):
         self._settings['multi'] = value
@@ -488,20 +496,30 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
             5
         """
         kwargs = self._get_needed_kwargs(arg_dct)
+
+        if isinstance(self.nmax, int):
+            nmax = self.nmax
+        else:
+            nmax = arg_dct[self.nmax] 
+           
         if self.multi is False:
             return self._trigger(passed_value, kwargs)
         else:
-            return self._multi_trigger(passed_value, kwargs)
+            return self._multi_trigger(passed_value, kwargs, nmax=nmax)
 
-    def _multi_trigger(self, iterator, kwargs):
+    def _multi_trigger(self, iterator, kwargs, nmax = -1):
         """ trigger an event multiple times """
         result = []
+        counter = 0
         while True:
+            if counter == nmax:
+                break
             tmp_result, ierr = self._func(iterator, **kwargs)
             if ierr == -1:
                 break
             result.append(self._process_func(tmp_result,
                                              **self._process_func_kwargs))
+            counter += 1
         return result, ierr
 
     def _trigger(self, iterator, kwargs):
@@ -517,6 +535,15 @@ class JoinedEvent(object):
     def __init__(self, events):
         self._events = events
         self._reset_events()
+        self._settings={}
+
+    @property
+    def nmax(self):
+        return self._settings.get('nmax', -1)
+
+    @nmax.setter
+    def nmax(self, value):
+        self._settings['nmax'] = value
 
     @property
     def reset(self):
@@ -544,13 +571,23 @@ class JoinedEvent(object):
 
     def _trigger(self, passed_value, arg_dct):
         results = dict((event.name, []) for event in self.events)
+
+        if isinstance(self.nmax, int):
+            nmax = self.nmax
+        else:
+            nmax = arg_dct[self.nmax] 
+
+        counter = 0
         while True:
+            if counter == nmax:
+                break
             for event in self.events:
                 result, ierr = event.trigger(passed_value, arg_dct)
                 if ierr == 1:
                     results[event.name].append(result)
             if ierr == -1:
                 break
+            counter += 1
         return results, ierr
 
 
