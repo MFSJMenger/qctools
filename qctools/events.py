@@ -8,9 +8,40 @@ from .functions import identity
 from .functions import str_split, str_split_multi
 from .functions import map_function_by_lines, map_function
 # Exceptions
-from .exceptions import UnkownProcessFunction, UnkownEvent
-from .exceptions import MissingEventKeyword
-from .exceptions import MissingEvent, MissingEventCall
+from .exceptions import CustomErrorMsg
+# Expression 
+from .expression import MathExpression
+
+
+class UnkownProcessFunction(Exception):
+    pass
+
+
+class MissingEvent(CustomErrorMsg):
+
+    def __init__(self, event):
+        text = """Event '%s' needs to be set """ 
+        self.custom_error_msg = text % (event) 
+
+
+class UnkownEvent(CustomErrorMsg):
+
+    def __init__(self, event):
+        self.custom_error_msg = ('Event "%s" unknown, please register before usage' 
+                                  % event)
+
+class MissingEventKeyword(CustomErrorMsg):
+
+    def __init__(self, keyword):
+        self.custom_error_msg = ("Keyword '%s' needs to be set in Event"
+                                  % keyword)
+
+
+class MissingEventCall(CustomErrorMsg):
+
+    def __init__(self, previous_event, current_event):
+        text = """Event '%s' needs to be set and called before Event '%s'""" 
+        self.custom_error_msg = text % (previous_event, current_event) 
 
 
 def event_getter_pygrep(func=pygrep_iterator_lines):
@@ -56,8 +87,8 @@ def _create_getter(dct, lst, func):
 
 def _check_types(iterator, types):
     for i, entry in enumerate(iterator):
-        if type(entry) != types[i]:
-            raise TypeError(("Entry has to be of type '%s'", str(types[i])))
+        if not isinstance(entry, types[i]):
+            raise TypeError(("Entry has to be of type '%s'" % str(types[i])))
 
 
 def _check_event_getter(getter):
@@ -165,8 +196,10 @@ def print_possible_events():
     print(_BasicEvent.get_possible_events())
     print("******************************")
 
+class _CoreEvent(object):
+    pass
 
-class _BasicEvent(object):
+class _BasicEvent(_CoreEvent):
     """ Basic Class contains all possible event types """
 
     _events = {
@@ -439,18 +472,18 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
             if type(kwargs[key]) == optional_set_keys[key]:
                 keys[key] = kwargs[key]
             else:
-                replace_keys[key] = kwargs[key]
+                # convert given value to MathExpression
+                replace_keys[key] = MathExpression(kwargs[key])
 
         return keys, replace_keys
 
 
     def _get_needed_kwargs(self, dct):
-
+        # copy args
         kwargs = deepcopy(self._keys)
-        for key, dct_key in self._replace_keys.items():
-            if dct_key not in dct:
-                raise MissingEvent(key)
-            kwargs[key] = dct[dct_key]
+        # 
+        for key, expr in self._replace_keys.items():
+            kwargs[key] = expr.eval(dct)
             if kwargs[key] is None:
                 raise MissingEventCall(key, self._name)
         return kwargs
@@ -530,7 +563,7 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
         return result, ierr
 
 
-class JoinedEvent(object):
+class JoinedEvent(_CoreEvent):
 
     def __init__(self, events):
         self._events = events
