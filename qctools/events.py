@@ -9,6 +9,8 @@ from .functions import str_split, str_split_multi
 from .functions import map_function_by_lines, map_function
 # Exceptions
 from .exceptions import CustomErrorMsg
+# Expression 
+from .expression import MathExpression
 
 
 class UnkownProcessFunction(Exception):
@@ -462,7 +464,8 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
             if type(kwargs[key]) == optional_set_keys[key]:
                 keys[key] = kwargs[key]
             else:
-                replace_keys[key] = kwargs[key]
+                # convert given value to MathExpression
+                replace_keys[key] = MathExpression(kwargs[key])
 
         return keys, replace_keys
 
@@ -471,10 +474,8 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
         # copy args
         kwargs = deepcopy(self._keys)
         # 
-        for key, dct_key in self._replace_keys.items():
-            if dct_key not in dct:
-                raise MissingEventError(key)
-            kwargs[key] = dct[dct_key]
+        for key, expr in self._replace_keys.items():
+            kwargs[key] = expr.eval(dct)
             if kwargs[key] is None:
                 raise MissingEventCall(key, self._name)
         return kwargs
