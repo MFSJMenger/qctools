@@ -41,12 +41,17 @@ class FileIterator
 
         explicit FileIterator(const std::string filename) : file{filename} { }
         explicit FileIterator(const int fileno, const int pos) : file{fileno, pos} { }
-
+        // Helper
         char* get_line();
-        char* find_line(std::string key); 
-
-        int grep(std::string key, size_t ilen, size_t ishift, std::vector<std::string>& vec);
-
+        char* find_line(const std::string& key); 
+        //
+        std::vector<std::string> grep(const std::string& key, size_t ilen, 
+                                      const size_t ishift, int& ierr);
+        //
+        std::vector<std::string> till(const std::string& end, int& ierr);
+        //
+        std::vector<std::string> in_between(const std::string& start, const std::string& end, int& ierr);
+        //
         inline void rewind_fh() { rewind(file.fh()); };
 
         inline int tell() const noexcept {return file.tell();}
