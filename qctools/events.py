@@ -637,6 +637,7 @@ class JoinedEvent(_CoreEvent):
             nmax = arg_dct[self.nmax] 
 
         counter = 0
+        # possible endless loop....
         while True:
             if counter == nmax:
                 break
