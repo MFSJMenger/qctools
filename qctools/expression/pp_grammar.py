@@ -13,7 +13,7 @@ rparent = pp.Suppress(')')
 # variables
 number = pp.pyparsing_common.number
 var = pp.Word(pp.alphas)
-# 
+#
 variable = pp.Or(number | var)
 # Operators
 operator = pp.Or(plus | minus | mult | divide)
@@ -23,12 +23,12 @@ simple_expr_1 = pp.Group(variable + operator + variable)
 simple_expr_2 = pp.Group(lparent + variable + operator + variable + rparent)
 expr = pp.Or(simple_expr_2 | simple_expr_1 | variable)
 # Combined Expression
-express = pp.Or(pp.Group(expr + operator + expr) | 
+express = pp.Or(pp.Group(expr + operator + expr) |
                 pp.Group(lparent + expr + operator + expr + rparent) |
                 expr)
 # Full Expression
 expression = pp.Or(express + operator + express |
-                   expr + operator + express  |
+                   expr + operator + express |
                    express + operator + expr |
                    expr + operator + expr |
                    expr)

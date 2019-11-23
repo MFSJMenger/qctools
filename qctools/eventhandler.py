@@ -112,5 +112,6 @@ class BaseEventFileReader(EventHandler):
                 raise Exception("'%s' not in %s keys, please specify event"
                                 % (key, str(list(self._events.keys()))))
 
+
 def generate_event_class(name, possible_events, BaseClass=BaseEventFileReader):
     return type(name, (BaseClass, ), {'_events': possible_events})

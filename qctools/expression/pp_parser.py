@@ -4,18 +4,22 @@ import pyparsing as pp
 def deco(func):
 
     def _wrapper(lst, dct={}):
+
         if isinstance(lst, str):
             return dct[lst]
+
         elif len(lst) == 1:
             return eval_expr(lst[0], dct)
 
         if isinstance(lst[0], pp.ParseResults):
             lst[0] = eval_expr(lst[0], dct)
+
         elif isinstance(lst[0], str):
             lst[0] = dct[lst[0]]
 
         if isinstance(lst[2], pp.ParseResults):
             lst[2] = eval_expr(lst[2], dct)
+
         elif isinstance(lst[2], str):
             lst[2] = dct[lst[2]]
 
@@ -24,22 +28,22 @@ def deco(func):
     return _wrapper
 
 
-@deco 
+@deco
 def c_mult(lst):
     return lst[0] * lst[2]
 
 
-@deco 
+@deco
 def c_divide(lst):
     return lst[0] / lst[2]
 
 
-@deco 
+@deco
 def c_minus(lst):
     return lst[0] - lst[2]
 
 
-@deco 
+@deco
 def c_add(lst):
     return lst[0] + lst[2]
 
