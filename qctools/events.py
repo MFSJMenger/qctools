@@ -520,7 +520,7 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
                         value passed by the event handler, most cases an iterator
 
                 arg_dct (dct):
-                        Dictionary conatining results of previous events,
+                        Dictionary containing results of previous events,
                         can be used to pass results of previous events
                         as input to the `event function`
 
