@@ -21,3 +21,7 @@ def map_function_by_lines(txt, func=split_line_and_map):
 
 def map_function(iterator, func=split_line_and_map):
     return list(map(func, iterator))
+
+
+def only_first_element(iterator, func=split_line_and_map):
+    return func(iterator[0])

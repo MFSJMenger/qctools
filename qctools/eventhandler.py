@@ -1,5 +1,7 @@
 from .fileio import file_reading_iterator_raw
+# from .cppgrep import Iterator
 from .events import _CoreEvent
+from .events import JoinedEvent
 
 
 class EventHandler(object):
@@ -38,6 +40,16 @@ class EventHandler(object):
         """Define an Python object that is handed to all events"""
         return None
 
+    def _unfold_joined(self, dct, key):
+        """Unfold joined events!"""
+        for key, value in dct[key].items():
+            if key not in dct:
+                if isinstance(value, list):
+                    if len(value) == 1:
+                        value = value[0]
+                dct[key] = value
+                self._ignore_keys.append(key)
+
     def _trigger_event(self, passed_obj, key):
         """Triger a specific event and do error handling"""
         event = self._events[key]
@@ -45,6 +57,8 @@ class EventHandler(object):
         if event.reset is True:
             passed_obj = self._initialize_passed_object()
         self._values[key], ierr = event.trigger(passed_obj, self._values)
+        if isinstance(event, JoinedEvent):
+            self._unfold_joined(self._values, key)
         # reset iterator after event call
         if ierr == -1 and self._reset is True:
             passed_obj = self._initialize_passed_object()
@@ -111,6 +125,13 @@ class BaseEventFileReader(EventHandler):
             if key not in self._events.keys():
                 raise Exception("'%s' not in %s keys, please specify event"
                                 % (key, str(list(self._events.keys()))))
+
+
+class EventFileReader(BaseEventFileReader):
+
+    def _initialize_passed_object(self):
+        """Define an Python object that is handed to all events"""
+        return Iterator(self._name)
 
 
 def generate_event_class(name, possible_events, BaseClass=BaseEventFileReader):

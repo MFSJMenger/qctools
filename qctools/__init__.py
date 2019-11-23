@@ -7,7 +7,8 @@ __version__ = '0.2.0'
 
 from .parser import generate_filereader
 from .parser import GaussianReader
-# from .parser import OrcaReader
+# molden
+from .molden_config import MoldenParser
 # add events and show possible event types
 from .events import register_event_type
 from .events import print_possible_events
