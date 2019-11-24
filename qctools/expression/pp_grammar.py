@@ -21,7 +21,7 @@ operator = pp.Or(plus | minus | mult | divide)
 # Simple Expressions
 simple_expr_1 = pp.Group(variable + operator + variable)
 simple_expr_2 = pp.Group(lparent + variable + operator + variable + rparent)
-expr = pp.Or(simple_expr_2 | simple_expr_1 | variable)
+expr = pp.Or(simple_expr_2 | simple_expr_1 | variable | number)
 # Combined Expression
 express = pp.Or(pp.Group(expr + operator + expr) |
                 pp.Group(lparent + expr + operator + expr + rparent) |

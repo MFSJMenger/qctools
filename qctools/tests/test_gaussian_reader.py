@@ -26,4 +26,4 @@ def test_gaussian_reader_natoms(gaussian_h2o_file):
 
 def test_gaussian_reader_forces(gaussian_h2o_file):
     val = GaussianReader(gaussian_h2o_file, ["NAtoms", "forces"])
-    assert len(val["forces"]) == 7
+    assert len(val["forces"]) == 3

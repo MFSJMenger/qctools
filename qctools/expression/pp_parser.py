@@ -8,6 +8,9 @@ def deco(func):
         if isinstance(lst, str):
             return dct[lst]
 
+        elif isinstance(lst, (int, float, complex)):
+            return lst
+
         elif len(lst) == 1:
             return eval_expr(lst[0], dct)
 
