@@ -9,7 +9,6 @@ from .parser import generate_filereader
 from .parser import GaussianReader
 # molden
 from .molden_config import MoldenParser
-#from .parser import OrcaReader
 # add events and show possible event types
 from .events import register_event_type
 from .events import print_possible_events

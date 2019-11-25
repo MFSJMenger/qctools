@@ -126,6 +126,7 @@ class BaseEventFileReader(EventHandler):
                 raise Exception("'%s' not in %s keys, please specify event"
                                 % (key, str(list(self._events.keys()))))
 
+
 # class EventFileReader(BaseEventFileReader):
 #
 #    def _initialize_passed_object(self):

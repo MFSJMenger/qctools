@@ -6,6 +6,7 @@ from ..parser import GaussianReader
 # get absolute path for h2o.log file
 pwd = os.path.dirname(os.path.abspath(__file__))
 
+
 @pytest.fixture
 def gaussian_h2o_file():
     return os.path.join(pwd, "h2o.log")

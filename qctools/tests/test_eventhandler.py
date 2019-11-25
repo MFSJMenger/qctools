@@ -9,6 +9,7 @@ def example_eventhandler_none():
 
     class ExampleEventHandlerNone(EventHandler):
         _events = {}
+
         def _initialize_passed_object(self):
             """Define an Python object that is handed to all events"""
             class Value(object):
@@ -33,6 +34,7 @@ def register_print():
     register_event_type('print', [{}, [], fprint])
     return None
 
+
 @pytest.fixture
 def print_event(register_print):
     return Event('Print', 'print', {})
@@ -53,4 +55,3 @@ def test_example(example_eventhandler_none, print_event):
     #
     assert 'print2' in example_eventhandler_none.keys
     assert example_eventhandler_none['print2'] == 3
-

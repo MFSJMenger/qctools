@@ -1,4 +1,5 @@
 import sys
+from functools import partial
 #
 import pyparsing
 from .pp_parser import eval_expr
@@ -7,43 +8,35 @@ from .pp_grammar import EXPRESSION
 
 class MathExpression(object):
     """Way to handel simple mathematical operations"""
+    __slots__ = ('eval', '_value')
 
     def __init__(self, in_value, asis=False):
 
-        self.isfunc = False
-        self.isexpr = False
-        self.isvalue = False
-
-        if asis is True:
-            self.isvalue = True
-            self._value = in_value
-
-
-        elif isinstance(in_value, list):
+        if isinstance(in_value, (list, tuple)):
             if callable(in_value[0]):
-                self.isfunc = True
-                self._func = in_value[0]
-                self._args = in_value[1]
-            else:
-                self.isvalue = True
-                self._value = in_value
+                self.eval = partial(self._feval, func=in_value[0], args=in_value[1])
+                return
+
         elif isinstance(in_value, str):
-            self.isexpr = True
             try:
-                self._args = EXPRESSION.parseString(in_value, parseAll=True)
+                self._value = EXPRESSION.parseString(in_value, parseAll=True)
             except pyparsing.ParseException:
                 print(f"Error Termaination: Parsing of expression '{in_value}' not possible")
                 sys.exit()
-        else:
-            self.isvalue = True
-            self._value = in_value
+            self.eval = self._eval
+            return
+        # default set by value
+        self._value = in_value
+        self.eval = self._return_value
 
-    def eval(self, dct):
-        if self.isfunc:
-            kwargs = dict((key, value) for key, value in dct.items()
-                          if key in self._args)
-            return self._func(**kwargs)
-        if self.isexpr:
-            return eval_expr(self._args, dct=dct)
-        if self.isvalue:
-            return self._value
+    def _feval(self, dct={}, func=None, args=None):
+        kwargs = dict((key, value) for key, value in dct.items()
+                      if key in args)
+        return func(**kwargs)
+
+    def _return_value(self, dct={}):
+        return self._value
+
+    def _eval(self, dct={}):
+        """Compute result"""
+        return eval_expr(self._value, dct=dct)
