@@ -5,7 +5,7 @@ from .events import Event
 from .functions import str_split, identity
 from .functions import split_line_and_map
 
-from .atominfo import atomnumber_to_atomname
+from .atominfo import ATOMNUMBER_TO_ATOMNAME
 
 
 def get_scf_done(line):
@@ -15,7 +15,7 @@ def get_scf_done(line):
 
 def get_crd(line):
     columns = line.split()
-    return ([atomnumber_to_atomname[int(columns[1])]]
+    return ([ATOMNUMBER_TO_ATOMNAME[int(columns[1])]]
             + list(map(float, columns[3:6])))
 
 

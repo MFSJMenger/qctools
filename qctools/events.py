@@ -10,7 +10,7 @@ from .functions import map_function_by_lines, map_function
 from .functions import only_first_element
 # Exceptions
 from .exceptions import CustomErrorMsg
-# Expression 
+# Expression
 from .expression import MathExpression
 
 
@@ -21,28 +21,29 @@ class UnkownProcessFunction(Exception):
 class MissingEvent(CustomErrorMsg):
 
     def __init__(self, event):
-        text = """Event '%s' needs to be set """ 
-        self.custom_error_msg = text % (event) 
+        text = """Event '%s' needs to be set """
+        self.custom_error_msg = text % (event)
 
 
 class UnkownEvent(CustomErrorMsg):
 
     def __init__(self, event):
-        self.custom_error_msg = ('Event "%s" unknown, please register before usage' 
-                                  % event)
+        self.custom_error_msg = ('Event "%s" unknown, please register before usage'
+                                 % event)
+
 
 class MissingEventKeyword(CustomErrorMsg):
 
     def __init__(self, keyword):
         self.custom_error_msg = ("Keyword '%s' needs to be set in Event"
-                                  % keyword)
+                                 % keyword)
 
 
 class MissingEventCall(CustomErrorMsg):
 
     def __init__(self, previous_event, current_event):
-        text = """Event '%s' needs to be set and called before Event '%s'""" 
-        self.custom_error_msg = text % (previous_event, current_event) 
+        text = """Event '%s' needs to be set and called before Event '%s'"""
+        self.custom_error_msg = text % (previous_event, current_event)
 
 
 def event_getter_pygrep(func=pygrep_iterator_lines):
@@ -56,6 +57,7 @@ def event_getter_pygrep(func=pygrep_iterator_lines):
 
     return keyword_args, args, func
 
+
 def event_getter_join():
 
     keyword_args = {
@@ -67,9 +69,6 @@ def event_getter_join():
 
     def join_events(events):
         pass
-
-
-
 
     return keyword_args, args, join_events
 
@@ -86,6 +85,7 @@ def event_getter_cppgrep():
         return iterator.grep(keyword, ilen, ishift)
 
     return keyword_args, args, cppgrep
+
 
 def pass_function(*args, **kwargs):
     return None, 1
@@ -210,8 +210,10 @@ def print_possible_events():
     print(_BasicEvent.get_possible_events())
     print("******************************")
 
+
 class _CoreEvent(object):
     pass
+
 
 class _BasicEvent(_CoreEvent):
     """ Basic Class contains all possible event types """
@@ -221,7 +223,7 @@ class _BasicEvent(_CoreEvent):
             'xgrep': partial(event_getter_pygrep, func=pyxgrep_iterator_lines),
             'cppgrep': event_getter_cppgrep,
             'pass': _check_event_getter([{}, [], pass_function]),
-            '__joined_event' : ''
+            '__joined_event': ''
     }
 
     @property
@@ -239,7 +241,7 @@ class _BasicEvent(_CoreEvent):
 
 class _BasicEventProcessFunctions(object):
     """Class to store all possible event types"""
-    
+
     predefined_functions = {
             'split': {'func': ['idx', str_split, str_split_multi],
                       'grep': [map_function_by_lines, False],
@@ -267,8 +269,6 @@ class _BasicEventProcessFunctions(object):
             func_kwargs = {'func': partial(line_func, **func_kwargs)}
             return only_first_element, func_kwargs
 
-
-
         if bylines is True:
             func_kwargs = {'func': partial(line_func, **func_kwargs)}
             if event_type == 'grep':
@@ -288,7 +288,7 @@ class _BasicEventProcessFunctions(object):
             pass
         elif func == 'split':
             func, func_kwargs = cls._setup_split(event_type, func_kwargs)
-        else:     
+        else:
             raise UnkownProcessFunction("Unkown process function")
 
         return func, func_kwargs
@@ -310,7 +310,7 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
                 Arguments for the event type specific function
 
         func (function(arg1), optional):
-                Single position argument function that is invoced after 
+                Single position argument function that is invoced after
                 the event was triggered to postprocess the output.
                 additional arguments can be passed with `func_kwargs` as
                 `keyword arguments`
@@ -320,8 +320,8 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
                 single output of the event call
 
         process_func (function(arg1), optional):
-                Single position argument function that is invoced after 
-                all events are called by the event handler. 
+                Single position argument function that is invoced after
+                all events are called by the event handler.
                 It takes the result of the event as input, therefore
                 it should handle the case, the value is None!
                 additional arguments can be passed with `process_func_kwargs` as
@@ -372,12 +372,11 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
     """
 
     default_settings = {
-        'multi': False,  # call the event multiple times,
-                         # till the end of the iterator is reached
-        'reset': False,  # reset the iterator before calling the event
-        'delete': False, # delete the file afterwards
+        'multi': False,   # call the event multiple times,
+                          # till the end of the iterator is reached
+        'reset': False,   # reset the iterator before calling the event
+        'delete': False,  # delete the file afterwards
     }
-
 
     def __init__(self, name,
                  event_type, event_type_kwargs,
@@ -503,11 +502,10 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
 
         return keys, replace_keys
 
-
     def _get_needed_kwargs(self, dct):
         # copy args
         kwargs = deepcopy(self._keys)
-        # 
+        #
         for key, expr in self._replace_keys.items():
             kwargs[key] = expr.eval(dct)
             if kwargs[key] is None:
@@ -559,14 +557,14 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
         if isinstance(self.nmax, int):
             nmax = self.nmax
         else:
-            nmax = arg_dct[self.nmax] 
-           
+            nmax = arg_dct[self.nmax]
+
         if self.multi is False:
             return self._trigger(passed_value, kwargs)
         else:
             return self._multi_trigger(passed_value, kwargs, nmax=nmax)
 
-    def _multi_trigger(self, iterator, kwargs, nmax = -1):
+    def _multi_trigger(self, iterator, kwargs, nmax=-1):
         """ trigger an event multiple times """
         result = []
         counter = 0
@@ -594,7 +592,7 @@ class JoinedEvent(_CoreEvent):
     def __init__(self, events):
         self._events = events
         self._reset_events()
-        self._settings={}
+        self._settings = {}
 
     @property
     def nmax(self):
@@ -607,7 +605,7 @@ class JoinedEvent(_CoreEvent):
     @property
     def reset(self):
         return False
-    
+
     @property
     def delete(self):
         return False
@@ -634,7 +632,7 @@ class JoinedEvent(_CoreEvent):
         if isinstance(self.nmax, int):
             nmax = self.nmax
         else:
-            nmax = arg_dct[self.nmax] 
+            nmax = arg_dct[self.nmax]
 
         counter = 0
         # possible endless loop....
@@ -653,5 +651,6 @@ class JoinedEvent(_CoreEvent):
 
 def join_events(*args):
     return JoinedEvent(args)
+
 
 reset_event = Event('reset', 'pass', {}, settings={'reset': True})

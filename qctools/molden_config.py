@@ -7,13 +7,13 @@ from .events import join_events
 
 
 def event_getter_between():
-    
+
     keyword_args = {}
     args = ['start', 'end']
 
     def between(iterator, start, end):
 
-        
+
         if start is None:
             inbetween = True
         else:
@@ -26,7 +26,7 @@ def event_getter_between():
         # return
         if inbetween is False:
             return None, -1
-        
+
         out = []
         for line in iterator:
             if end in line:
@@ -43,14 +43,14 @@ register_event_type('between', event_getter_between)
 def length(iterator):
     return len(iterator)
 
-NAtoms = Event('NAtoms', 
+NAtoms = Event('NAtoms',
                'between', {'start': '[Atoms]',
                            'end': '[FREQ]',
                            'ishift': 1},
               func=length,
 )
 
-NFreqs = Event('NFreqs', 
+NFreqs = Event('NFreqs',
                'between', {'start': None,
                            'end': '[FR-COORD]'},
                 func=length,
@@ -59,7 +59,7 @@ NFreqs = Event('NFreqs',
 Info = join_events(NAtoms, NFreqs)
 Info._settings['nmax'] = 1
 
-Freqs = Event('Freqs', 
+Freqs = Event('Freqs',
                'xgrep', {'keyword': '[FREQ]',
                         'ilen': 'NFreqs',
                         'ishift': 1,},
@@ -69,13 +69,13 @@ Freqs = Event('Freqs',
 )
 
 
-FrCoords = Event('FrCoords', 
+FrCoords = Event('FrCoords',
               'xgrep', {'keyword': '[FR-COORD]',
                        'ilen': 'NAtoms',
                        'ishift': 1},
               func='split',
               func_kwargs={
-                  'idx': [0, 1, 2, 3], 
+                  'idx': [0, 1, 2, 3],
                   'typ': [str, float, float, float],
               },
 )
@@ -94,7 +94,7 @@ def parse_fr_norm_coords(result):
     return vibration
 
 
-FrNormCoords = Event('FrNormCoords', 
+FrNormCoords = Event('FrNormCoords',
         'xgrep', {'keyword': '[FR-NORM-COORD]',
                   'ilen': 'NFreqs*(NAtoms+1)',
                   'ishift': 1,

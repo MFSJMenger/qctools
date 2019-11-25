@@ -1,5 +1,5 @@
 from .fileio import file_reading_iterator_raw
-#from .cppgrep import Iterator
+# from .cppgrep import Iterator
 from .events import _CoreEvent
 from .events import JoinedEvent
 
@@ -50,7 +50,6 @@ class EventHandler(object):
                 dct[key] = value
                 self._ignore_keys.append(key)
 
-
     def _trigger_event(self, passed_obj, key):
         """Triger a specific event and do error handling"""
         event = self._events[key]
@@ -79,7 +78,6 @@ class EventHandler(object):
                 continue
             if event.delete is True:
                 del self._values[key]
-
 
     def _loop_over_events(self):
         """Main event loop"""
@@ -128,11 +126,11 @@ class BaseEventFileReader(EventHandler):
                 raise Exception("'%s' not in %s keys, please specify event"
                                 % (key, str(list(self._events.keys()))))
 
-class EventFileReader(BaseEventFileReader):
-
-    def _initialize_passed_object(self):
-        """Define an Python object that is handed to all events"""
-        return Iterator(self._name)
+# class EventFileReader(BaseEventFileReader):
+#
+#    def _initialize_passed_object(self):
+#        """Define an Python object that is handed to all events"""
+#        return Iterator(self._name)
 
 
 def generate_event_class(name, possible_events, BaseClass=BaseEventFileReader):

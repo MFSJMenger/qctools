@@ -1,58 +1,69 @@
 import pyparsing as pp
 
 
-def deco(func):
+def get_partial_expression(entry, dct):
+    if isinstance(entry, pp.ParseResults):
+        return eval_expr(entry, dct)
+
+    if isinstance(entry, str):
+        return dct[entry]
+
+    if isinstance(entry, (int, float, complex)):
+        return entry
+
+
+def handle_expression_cases(func):
 
     def _wrapper(lst, dct={}):
+        """Handle parsing!"""
         if isinstance(lst, str):
             return dct[lst]
-        elif len(lst) == 1:
-            return eval_expr(lst[0], dct)
 
-        if isinstance(lst[0], pp.ParseResults):
-            lst[0] = eval_expr(lst[0], dct)
-        elif isinstance(lst[0], str):
-            lst[0] = dct[lst[0]]
+        if isinstance(lst, (int, float, complex)):
+            return lst
 
-        if isinstance(lst[2], pp.ParseResults):
-            lst[2] = eval_expr(lst[2], dct)
-        elif isinstance(lst[2], str):
-            lst[2] = dct[lst[2]]
+        lst[0] = get_partial_expression(lst[0], dct)
+        try:
+            lst[2]
+        except IndexError:
+            return lst[0]
+
+        lst[2] = get_partial_expression(lst[2], dct)
 
         return func(lst)
-
     return _wrapper
 
 
-@deco 
+@handle_expression_cases
 def c_mult(lst):
     return lst[0] * lst[2]
 
 
-@deco 
+@handle_expression_cases
 def c_divide(lst):
     return lst[0] / lst[2]
 
 
-@deco 
+@handle_expression_cases
 def c_minus(lst):
     return lst[0] - lst[2]
 
 
-@deco 
+@handle_expression_cases
 def c_add(lst):
     return lst[0] + lst[2]
 
 
-@deco
+@handle_expression_cases
 def eval_expr(lst, dct={}):
-    if lst[1] == '+':
-        return c_add(lst, dct)
-    elif lst[1] == '-':
-        return c_minus(lst, dct)
-    elif lst[1] == '*':
-        return c_mult(lst, dct)
-    elif lst[1] == '/':
-        return c_divide(lst, dct)
-    else:
-        raise Exception
+    cases = {
+        '+': c_add,
+        '-': c_minus,
+        '*': c_mult,
+        '/': c_divide,
+    }
+
+    case = cases.get(lst[1], None)
+    if case is None:
+        raise ValueError("Operator {lst[1]} unknown, use [{', '.join(cases.keys())}]")
+    return case(lst, dict)

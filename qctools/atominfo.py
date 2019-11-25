@@ -1,5 +1,5 @@
 
-atomname_to_atomnumber = {
+ATOMNAME_TO_ATOMNUMBER = {
     'H': 1, 'He': 2,
     'Li': 3, 'Be': 4,
     'B': 5, 'C': 6,
@@ -19,7 +19,7 @@ atomname_to_atomnumber = {
     'As': 33, 'Se': 34,
     'Br': 35, 'Kr': 36,
     'Rb': 37, 'Sr': 38,
-    'Y': 39,  'Zr': 40,
+    'Y': 39, 'Zr': 40,
     'Nb': 41, 'Mo': 42,
     'Tc': 43, 'Ru': 44,
     'Rh': 45, 'Pd': 46,
@@ -38,7 +38,7 @@ atomname_to_atomnumber = {
     'At': 85, 'Rn': 86
 }
 
-atomnumber_to_atomname = {
+ATOMNUMBER_TO_ATOMNAME = {
     1: "H",
     2: "He",
     3: "Li",
