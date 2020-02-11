@@ -1,85 +1,65 @@
 from __future__ import print_function, division
 
 from collections import namedtuple
+from collections.abc import MutableMapping
+#
 from copy import deepcopy
 
 
 Conversion = namedtuple("Conversion", ["factor", "relation"])
 
 
-class UnknownUnitError(Exception):
-    pass
-
-
-class ConversionContainer(object):
-
-    named_tuple = Conversion
+class ConversionContainer(MutableMapping):
 
     def __init__(self, name, ref, dct):
         self.name = name
         self.ref = ref
-        self.values = self._parse_dct(dct)
+        self._values = self._parse_dct(dct)
 
         if self.ref not in self:
-            self[self.ref] = self.named_tuple(factor=1.0, relation='direct')
+            self[self.ref] = (1.0, 'direct')
 
-    def keys(self):
-        return self.values.keys()
+    def add_entry(self, key, fac, rel):
+        self[key] = (fac, rel)
 
-    def items(self):
-        return self.values.items()
-
-    def add_entry(self, name, fac, rel):
-        self.values[name] = Conversion(factor=fac, relation=rel)
-
-    def __str__(self):
-        return ("\nConversionContainer('%s')\n" % (self.name)
-                + "----------------------------------------------------\n"
-                + "".join(["Unit '%8s': %25s\n" % (key, value)
-                           for key, value in self.items()])
-                + "----------------------------------------------------\n")
-
-    def __iter__(self):
-        self._lkeys = list(self.keys())
-        self._count = 0
-        self._nmax = len(self._lkeys)
-        return self
-
-    def __next__(self):
-        if self._count < self._nmax:
-            result = self._lkeys[self._count]
-            self._count += 1
-            return result
-        raise StopIteration
+    def __len__(self):
+        return len(self._values)
 
     def __getitem__(self, key):
-        return_value = self.values.get(key, None)
-        if return_value is None:
-            raise UnknownUnitError(
-                    "Unknown Unit '%s' for type '%s'" % (key, self.name))
-        return return_value
+        return self._values[key]
+
+    def __delitem__(self, key):
+        del self._values[key]
 
     def __setitem__(self, key, value):
-        if not isinstance(value, self.named_tuple):
-            if type(value) in [tuple, list]:
-                self.values[key] = self.named_tuple(
-                        factor=value[0],
-                        relation=value[1])
-            else:
-                raise TypeError('entries need to be either ')
-        else:
-            self.values[key] = value
+        if isinstance(value, Conversion):
+            self._values[key] = value
+            return
+        if not isinstance(value, (tuple, list)):
+            raise ValueError('only tuple or list of (factor, relation) pairs accepted')
+        self._values[key] = Conversion(factor=value[0], relation=value[1])
+
+    def __str__(self):
+        items = "\n".join(f"Unit '{key}': {value}" for key, value in self.items())
+        return f""" ConversionContainer('{self.name}')
+----------------------------------------------------
+{items}
+----------------------------------------------------
+"""
+
+    def __iter__(self):
+        return iter(self._values)
 
     def _parse_dct(self, in_dct):
         dct = deepcopy(in_dct)
         if 'reference' in dct:
             del dct['reference']
         for key, value in dct.items():
-            if not isinstance(value, self.named_tuple):
-                if type(value) in [tuple, list]:
-                    dct[key] = self.named_tuple(
-                            factor=value[0],
-                            relation=value[1])
+            if not isinstance(value, Conversion):
+                if isinstance(value, (tuple, list)):
+                    dct[key] = Conversion(factor=value[0], relation=value[1])
                 else:
-                    raise TypeError('entries need to be either ')
+                    raise TypeError('entries need to be either Conversion or tuple/list')
+            if dct[key].relation not in ('direct', 'inverse'):
+                raise ValueError("Only 'direct' and 'inverse' relations implemented")
         return dct
