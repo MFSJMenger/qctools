@@ -1,21 +1,24 @@
+from collections.abc import Mapping
+#
 from .fileio import file_reading_iterator_raw
 # from .cppgrep import Iterator
 from .events import _CoreEvent
 from .events import JoinedEvent
 
 
-class EventHandler(object):
+class EventHandler(Mapping):
     """Basic Event Handler to loop over events"""
 
     _events = dict()
 
     def __init__(self, reset=True):
         self._reset = reset
-        self._values = dict((key, None) for key in self.keys)
+        self._values = dict((key, None) for key in self.keys())
         self._ignore_keys = []
 
-    def __getitem__(self, key):
-        return self._values.get(key, None)
+    def _initialize_passed_object(self):
+        """Define an Python object that is handed to all events"""
+        return None
 
     @classmethod
     def add_event(cls, name, event):
@@ -25,9 +28,18 @@ class EventHandler(object):
         else:
             raise TypeError("Added event '%s' needs to be an event!" % name)
 
-    @property
-    def keys(self):
-        return list(self._events.keys())
+    # Implement Mappings
+    def __getitem__(self, key):
+        """Return result values"""
+        return self._values.get(key, None)
+
+    def __iter__(self):
+        """Iter over results"""
+        return iter(self._values)
+
+    def __len__(self):
+        """give the length of results"""
+        return len(self._values)
 
     def event_keys(self):
         return self._events.keys()
@@ -35,10 +47,6 @@ class EventHandler(object):
     @property
     def perform_events(self):
         self._loop_over_events()
-
-    def _initialize_passed_object(self):
-        """Define an Python object that is handed to all events"""
-        return None
 
     def _unfold_joined(self, dct, key):
         """Unfold joined events!"""
@@ -82,7 +90,7 @@ class EventHandler(object):
     def _loop_over_events(self):
         """Main event loop"""
         passed_obj = self._initialize_passed_object()
-        for key in self.keys:
+        for key in self.keys():
             passed_obj, ierr = self._trigger_event(passed_obj, key)
         self._post_process()
 
@@ -107,7 +115,6 @@ class BaseEventFileReader(EventHandler):
     def filename(self):
         return self._name
 
-    @property
     def keys(self):
         return self._keys
 
