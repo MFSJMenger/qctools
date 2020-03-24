@@ -22,8 +22,8 @@ def test_mult():
     assert expr.eval() == 880
 
 def test_division():
-    expr = MathExpression("88/11")
-    assert expr.eval() == 8.0
+    expr = MathExpression("88//11")
+    assert expr.eval() == 8
 
 def test_variables():
     expr = MathExpression("NAtoms")
@@ -36,3 +36,31 @@ def test_variable_mult():
 def test_variables_mult():
     expr = MathExpression("Three*NAtoms")
     assert expr.eval({'NAtoms': 70, 'Three': 3}) == 210
+
+def test_single_value():
+    expr = MathExpression(1)
+    assert expr.eval() == 1
+
+def test_single_function():
+    expr = """
+def eval():
+    return 100
+
+eval() 
+"""
+    expr = MathExpression(expr)
+    assert expr.eval() == 100
+
+def test_complex_expr():
+    expr = """
+
+def mult(a, b):
+    return a*b
+
+def eval(c, d):
+    return int(mult(c, d) + 1.0)
+
+eval(c, d) 
+"""
+    expr = MathExpression(expr)
+    assert expr.eval({'c': 21, 'd': 10}) == 211

@@ -1,42 +1,47 @@
 import sys
-from functools import partial
-#
-import pyparsing
-from .pp_parser import eval_expr
-from .pp_grammar import EXPRESSION
 
 
 class MathExpression(object):
     """Way to handel simple mathematical operations"""
-    __slots__ = ('eval', '_value')
+    __slots__ = ('eval', '_expr', '_names')
 
-    def __init__(self, in_value, asis=False):
+    placeholder = "__MATHEXPR__ANSWER__"
 
-        if isinstance(in_value, (list, tuple)):
-            if callable(in_value[0]):
-                self.eval = partial(self._feval, func=in_value[0], args=in_value[1])
-                return
+    def __init__(self, expr):
 
-        elif isinstance(in_value, str):
-            try:
-                self._value = EXPRESSION.parseString(in_value, parseAll=True)
-            except pyparsing.ParseException:
-                print(f"Error Termaination: Parsing of expression '{in_value}' not possible")
-                sys.exit()
+        if isinstance(expr, str):
+            expr = self._preprocess_expr(expr)
+            expr = compile(expr, "mathexpr", "exec")
+            self._expr, self._names = self._check_expr(expr)
             self.eval = self._eval
-            return
-        # default set by value
-        self._value = in_value
-        self.eval = self._return_value
+        elif isinstance(expr, int):
+            # default set by value
+            self._expr = expr
+            self.eval = self._return_value
+        else:
+            raise ValueError("Expression can only be int or a python expression!")
 
-    def _feval(self, dct={}, func=None, args=None):
-        kwargs = dict((key, value) for key, value in dct.items()
-                      if key in args)
-        return func(**kwargs)
+    def _preprocess_expr(self, expr):
+        lines = [line for line in expr.splitlines() if line.strip() != ""]
+        lines[-1] = f"{self.placeholder} = {lines[-1]}"
+        out = "\n".join(lines)
+        return out
+
+    def _check_expr(self, expr):
+        names = tuple(name for name in expr.co_names if name != self.placeholder)
+        dct = {name: 1 for name in names}
+        exec(expr, dct)
+        # get rid of functions etc.
+        names = tuple(name for name in names if not hasattr(dct[name], '__call__'))
+        if not isinstance(dct[self.placeholder], int):
+            raise ValueError("MathExpression has to return integer!")
+        return expr, names
 
     def _return_value(self, dct={}):
-        return self._value
+        return self._expr
 
     def _eval(self, dct={}):
         """Compute result"""
-        return eval_expr(self._value, dct=dct)
+        out = {name: dct[name] for name in self._names}
+        exec(self._expr, out)
+        return out[self.placeholder]

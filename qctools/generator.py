@@ -2,7 +2,7 @@ from copy import deepcopy
 from collections import namedtuple
 #
 from .colt.generator import GeneratorBase
-from .colt import parser as LineParser
+from .colt.validator import ilist_parser, bool_parser, list_parser
 #
 from .events import Event
 from .parser import generate_filereader as _generate_filereader
@@ -75,8 +75,8 @@ class Split:
         if len(cols) != 2:
             raise ValueError('Split needs to be define as \n split = idx :: typ\n')
 
-        idx = LineParser.ilist_parser(cols[0])
-        types = [self._func_types[entry] for entry in LineParser.list_parser(cols[1])]
+        idx = ilist_parser(cols[0])
+        types = [self._func_types[entry] for entry in list_parser(cols[1])]
         if len(idx) == 1:
             idx = idx[0]
         if len(types) == 1:
@@ -108,18 +108,18 @@ class Settings:
         if ncols == 0:
             return dct
         if ncols >= 1:
-            dct['multi'] = LineParser.bool_parser(cols[0])
+            dct['multi'] = bool_parser(cols[0])
         if ncols >= 2:
-            dct['reset'] = LineParser.bool_parser(cols[1])
+            dct['reset'] = bool_parser(cols[1])
         if ncols >= 3:
-            dct['delete'] = LineParser.bool_parser(cols[2])
+            dct['delete'] = bool_parser(cols[2])
         return dct
 
     def _string_to_dict(self, string):
         dct = {}
-        for key_value in  LineParser.list_parser(string):
+        for key_value in  list_parser(string):
             key, value = tuple(key_value.split('='))
-            dct[key] = LineParser.bool_parser(value)
+            dct[key] = bool_parser(value)
         return dct
 
 
