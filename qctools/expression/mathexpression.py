@@ -18,6 +18,8 @@ class MathExpression(object):
             # default set by value
             self._expr = expr
             self.eval = self._return_value
+        elif hasattr(expr, '__call__'):
+            self.eval = expr
         else:
             raise ValueError("Expression can only be int or a python expression!")
 
