@@ -1,15 +1,14 @@
 from copy import deepcopy
-from collections import namedtuple
 #
-from .colt.generator import GeneratorBase
-from .colt.validator import ilist_parser, bool_parser, list_parser
+from .colt.generator import GeneratorBase, BranchingNode
+from .colt.validator import Validator
 #
 from .events import Event
 from .parser import generate_filereader as _generate_filereader
 
 
-class EventDict(dict):
-    pass
+ilist_parser = Validator('ilist').validate
+list_parser = Validator('list').validate
 
 
 class Grep:
@@ -67,24 +66,20 @@ class Split:
             }
 
     def __init__(self, string):
-
         self.idx, self.typ = self._parse_string(string)
 
     def _parse_string(self, string):
-        cols = [col.strip() for col in string.split(self.seperator)]
+        cols = tuple(col.strip() for col in string.split(self.seperator))
         if len(cols) != 2:
             raise ValueError('Split needs to be define as \n split = idx :: typ\n')
+        idx, types = cols
 
-        idx = ilist_parser(cols[0])
-        types = [self._func_types[entry] for entry in list_parser(cols[1])]
+        idx = ilist_parser(idx)
+        types = tuple(self._func_types[entry] for entry in list_parser(types))
         if len(idx) == 1:
-            idx = idx[0]
+            idx = idx
         if len(types) == 1:
-            if isinstance(idx, list):
-                types = [types[0] for _ in idx]
-            else:
-                types = types[0]
-
+            types = tuple(types[0] for _ in idx)
         return idx, types
 
 
@@ -123,17 +118,39 @@ class Settings:
         return dct
 
 
+class EventDict(dict):
+    pass
+
+
+class JoinedEventContainer(BranchingNode):
+
+    def __init__(self, name, leaf, subnodes=None):
+        BranchingNode.__init__(self, name, leaf, subnodes)
+
+
 class EventGenerator(GeneratorBase):
 
     node_type = EventDict
     leafnode_type = (Grep, Split, Settings)
-
+    branching_type = JoinedEventContainer
 
     @classmethod
     def new_branching(cls, name, leaf=None):
-        raise NotImplementedError('branching not supported!')
+        if leaf is not None:
+            raise Exception("Generator accepts no leaf key for branching")
+        return JoinedEventContainer(name, leaf)
+
+    @staticmethod
+    def new_node():
+        return EventDict()
+
+    @staticmethod
+    def tree_container():
+        return EventDict()
 
     def leaf_from_string(self, name, value, parent):
+        if not self._is_single_layer(parent):
+            raise Exception("Generator accepts only one layer")
         if name == 'grep':
             return Grep(value)
         if name == 'split':
@@ -142,6 +159,14 @@ class EventGenerator(GeneratorBase):
             return Settings(value)
         raise InputError('cannot parse tree')
 
+    @classmethod
+    def _is_single_layer(cls, parent):
+        if parent == "":
+            return False
+        parent, child = cls.rsplit_keys(parent)
+        if child is None:
+            return True
+        return False
 
 
 def event_from_dct(name, dct):
@@ -177,7 +202,15 @@ def event_from_dct(name, dct):
 
 def generate_events(eventstring):
     events = EventGenerator(eventstring).tree
-    return {name: event_from_dct(name, eventdct) for name, eventdct in events.items()}
+    out = {}
+    for name, eventdct in events.items():
+        if isinstance(eventdct, EventDict):
+            out[name] = event_from_dct(name, eventdct)
+        elif isinstance(eventdct, JoinedEventContainer):
+            out[name] = tuple(event_from_dct(key, event) for key, event in eventdct.items())
+        else:
+            raise Exception("")
+    return out
 
 
 def generate_filereader(name, events):

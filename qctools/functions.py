@@ -2,7 +2,11 @@ def str_split(string, idx=0, typ=str):
     return typ(string.split()[idx])
 
 
-def str_split_multi(string, idx=[], typ=[]):
+def str_split_multi(string, idx=None, typ=None):
+    if idx is None:
+        idx = []
+    if typ is None:
+        typ = []
     col = string.split()
     return [typ[j](col[i]) for j, i in enumerate(idx)]
 

@@ -380,10 +380,17 @@ class Event(_BasicEvent, _BasicEventProcessFunctions):
 
     def __init__(self, name,
                  event_type, event_type_kwargs,
-                 func=identity, func_kwargs={},
-                 process_func=identity, process_func_kwargs={},
-                 settings={}):
+                 func=identity, func_kwargs=None,
+                 process_func=identity, process_func_kwargs=None,
+                 settings=None):
         """ intialize an event """
+        if settings is None:
+            settings = {}
+        if process_func_kwargs is None:
+            process_func_kwargs = {}
+        if func_kwargs is None:
+            func_kwargs = {}
+        #
         self._name = name
         self._func = None
         self._choose_event(event_type, event_type_kwargs)

@@ -39,11 +39,13 @@ class MathExpression(object):
             raise ValueError("MathExpression has to return integer!")
         return expr, names
 
-    def _return_value(self, dct={}):
+    def _return_value(self, dct=None):
         return self._expr
 
-    def _eval(self, dct={}):
+    def _eval(self, dct=None):
         """Compute result"""
+        if dct is None:
+            dct = {}
         out = {name: dct[name] for name in self._names}
         exec(self._expr, out)
         return out[self.placeholder]
