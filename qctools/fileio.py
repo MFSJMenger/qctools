@@ -2,46 +2,46 @@ from .utils import try_function_decorator
 
 
 # work with the file object itself
-@try_function_decorator("Error appending to file('$fileName')",
-                        {'fileName': 0})
-def append_content_to_file(fileName, content, options="a"):
-    """ append content to file [fileName]
+@try_function_decorator("Error appending to file('$filename')",
+                        {'filename': 0})
+def append_content_to_file(filename, content, options="a"):
+    """ append content to file [filename]
 
-        fileName = str, Name of the file to be read
+        filename = str, Name of the file to be read
         content  = str, content to be appended to the file
         return   = None
     """
-    with open(fileName, options) as f:
+    with open(filename, options) as f:
         f.write(content)
 
 
-@try_function_decorator("Error writing to file('$fileName')", {'fileName': 0})
-def write_content_to_file(fileName, content, options="w"):
-    """ write content to file [fileName]
+@try_function_decorator("Error writing to file('$filename')", {'filename': 0})
+def write_content_to_file(filename, content, options="w"):
+    """ write content to file [filename]
 
-        fileName = str, Name of the file to be read
+        filename = str, Name of the file to be read
         content  = str, content written to the file
     """
-    with open(fileName, options) as f:
+    with open(filename, options) as f:
         f.write(content)
 
 
-@try_function_decorator("Error reading file('$fileName')", {'fileName': 0})
-def read_full_file(fileName, options="rb+"):
+@try_function_decorator("Error reading file('$filename')", {'filename': 0})
+def read_full_file(filename, options="rb+"):
     """Read File and return text in file
-       fileName = str, Name of the file to be read (or path+fileName)
-       return   = str, text in fileName
+       filename = str, Name of the file to be read (or path+filename)
+       return   = str, text in filename
     """
-    with open(fileName, options) as f:
+    with open(filename, options) as f:
         text = f.read()
     return text
 
 
 # iterators
-def file_reading_iterator(fileName, comment_char="#", options='r'):
+def file_reading_iterator(filename, comment_char="#", options='r'):
     """generates an iterator to loop over the lines of a file"""
     # actual loop
-    with open(fileName, options) as f:
+    with open(filename, options) as f:
         while True:
             line = f.readline()
             if not line:
@@ -54,10 +54,10 @@ def file_reading_iterator(fileName, comment_char="#", options='r'):
             yield line
 
 
-def file_reading_iterator_raw(fileName, options='r'):
+def file_reading_iterator_raw(filename, options='r'):
     """generates an iterator to loop over the lines of a file"""
     # actual loop
-    with open(fileName, options) as f:
+    with open(filename, options) as f:
         while True:
             line = f.readline()
             if not line:

@@ -5,7 +5,7 @@ __author__ = """Maximilian Menger"""
 __email__ = 'maximilian.menger@univie.ac.at'
 __version__ = '0.2.0'
 
-from .parser import generate_filereader
+from .generator import generate_filereader
 from .parser import GaussianReader
 # molden
 from .molden_config import MoldenParser

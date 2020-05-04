@@ -10,6 +10,11 @@ def example_eventhandler_none():
     class ExampleEventHandlerNone(EventHandler):
         _events = {}
 
+        def __init__(self, keys, reset=True):
+            self._reset = reset
+            self._values = dict((key, None) for key in keys)
+            self._ignore_keys = []
+
         def _initialize_passed_object(self):
             """Define an Python object that is handed to all events"""
             class Value(object):
@@ -24,7 +29,7 @@ def example_eventhandler_none():
 
             return Value(1)
 
-    return ExampleEventHandlerNone()
+    return ExampleEventHandlerNone
 
 
 @pytest.fixture
@@ -48,10 +53,12 @@ def test_register_event(register_print):
 def test_example(example_eventhandler_none, print_event):
     example_eventhandler_none._events['print'] = print_event
     example_eventhandler_none._events['print2'] = print_event
-    example_eventhandler_none.perform_events
+    handle = example_eventhandler_none(['print', 'print2'])
+    handle.perform_events
     #
-    assert 'print' in example_eventhandler_none.keys
-    assert example_eventhandler_none['print'] == 2
+    assert 'print' in handle.keys()
+    assert handle['print'] == 2
     #
-    assert 'print2' in example_eventhandler_none.keys
-    assert example_eventhandler_none['print2'] == 3
+    assert 'print2' in handle.keys()
+    assert handle['print2'] == 3
+    assert handle.get('print3') == None

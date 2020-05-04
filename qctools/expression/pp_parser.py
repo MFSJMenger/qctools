@@ -14,8 +14,10 @@ def get_partial_expression(entry, dct):
 
 def handle_expression_cases(func):
 
-    def _wrapper(lst, dct={}):
+    def _wrapper(lst, dct=None):
         """Handle parsing!"""
+        if dct is None:
+            dct = {}
         if isinstance(lst, str):
             return dct[lst]
 
@@ -55,7 +57,7 @@ def c_add(lst):
 
 
 @handle_expression_cases
-def eval_expr(lst, dct={}):
+def eval_expr(lst, dct=None):
     cases = {
         '+': c_add,
         '-': c_minus,
