@@ -1,8 +1,5 @@
-from __future__ import print_function, division
-
 from collections.abc import MutableMapping
-from functools import partial
-
+#
 from .container import ConversionContainer
 
 # relations:
@@ -59,7 +56,7 @@ class Converter(MutableMapping):
     def _generate_converter_expression(self, tin, tout):
         if not all(typ in self.container for typ in (tin, tout)):
             raise ValueError(f"cannot convert from '{tin}' to '{tout}'")
-        
+
         input_conversion = self.container[tin]
         output_conversion = self.container[tout]
 
@@ -86,8 +83,8 @@ def _call(self, x):
 
         exec(string, classdct)
 
-        ConverterFunction = type('ConverterFunction', (), {'__slots__': (), 
-                                                           '__repr__': _repr, 
+        ConverterFunction = type('ConverterFunction', (), {'__slots__': (),
+                                                           '__repr__': _repr,
                                                            '__str__': _str,
                                                            '__call__': classdct['_call']})
 
