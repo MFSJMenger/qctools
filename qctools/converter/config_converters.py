@@ -3,6 +3,8 @@ from .converter import Converter
 
 energy_converter = Converter.from_dct('energy', 'au', {
     'au': (1.0, 'direct'),
+    'cminv': (219474.63068, 'direct'),
+    'cm-1': (219474.63068, 'direct'),
     'eV': (27.211399, 'direct'),
     'nm': (1239.84193/27.211399, 'inverse'),
     'fs': (4.13567/27.211399, 'inverse'),
@@ -12,6 +14,7 @@ energy_converter = Converter.from_dct('energy', 'au', {
 
 
 length_converter = Converter.from_dct('length', 'ang', {
+        'au': (1.0/0.529177249, 'direct'),
         'ang':  (1.0, 'direct'),
         'nm':  (10.0, 'direct'),
         'bohr':  (1.88971616463207, 'direct'),
