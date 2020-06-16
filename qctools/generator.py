@@ -9,6 +9,7 @@ from .parser import generate_filereader as _generate_filereader
 
 ilist_parser = Validator('ilist').validate
 list_parser = Validator('list').validate
+bool_parser = Validator('bool').validate
 
 
 class Grep:
