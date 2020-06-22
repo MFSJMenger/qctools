@@ -1,6 +1,6 @@
 from copy import deepcopy
 #
-from .colt.generator import GeneratorBase, BranchingNode
+from .colt.generator import Generator, BranchingNode
 from .colt.validator import Validator
 #
 from .events import Event
@@ -129,7 +129,7 @@ class JoinedEventContainer(BranchingNode):
         BranchingNode.__init__(self, name, leaf, subnodes)
 
 
-class EventGenerator(GeneratorBase):
+class EventGenerator(Generator):
 
     node_type = EventDict
     leafnode_type = (Grep, Split, Settings)
