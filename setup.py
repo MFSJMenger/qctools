@@ -39,26 +39,20 @@ test_requirements = ['pytest', ]
 
 
 setup(
-    author="Maximilian Menger",
-    author_email='maximilian.menger@univie.ac.at',
+    author="Maximilian F.S.J. Menger",
+    author_email='m.f.s.j.menger@rug.nl',
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
+        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
     description="Python tools for quantum chemists",
-    entry_points={
-        'console_scripts': [
-            'qctools=qctools.cli:main',
-        ],
-    },
+    entry_points={},
 
 #    ext_modules = [cppgrep],
 #    cmdclass = {'build_ext': build_ext},
@@ -68,11 +62,12 @@ setup(
     include_package_data=True,
     keywords='qctools',
     name='qctools',
-    packages=find_packages(include=['qctools']),
+    packages=find_packages(include=['qctools', 'qctools.*']),
+    license="Apache License v2.0",
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/MFSJMenger/qctools',
+    url='https://github.com/mfsjmenger/qctools',
     version='0.2.0',
     zip_safe=False,
 )
