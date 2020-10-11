@@ -3,13 +3,13 @@ from .converter import Converter
 
 energy_converter = Converter.from_dct('energy', 'au', {
     'au': (1.0, 'direct'),
-    'cminv': (219474.63068, 'direct'),
-    'cm-1': (219474.63068, 'direct'),
     'eV': (27.211399, 'direct'),
     'nm': (1239.84193/27.211399, 'inverse'),
     'fs': (4.13567/27.211399, 'inverse'),
     'kjmol': (2625.5002, 'direct'),
     'kcalmol': (627.509608, 'direct'),
+    'cminv': (219474.63068, 'direct'),
+    'cm-1': (219474.63068, 'direct'),
 })
 
 
@@ -30,6 +30,7 @@ force_converter = Converter.from_dct('force', 'au', {
 
 
 time_converter = Converter.from_dct('time', 'fs', {
+        'au': (1.0/0.02418884254, 'direct'),
         'sec': (1.0/(10**(15)), 'direct'),
         's': (1.0/(10**(15)), 'direct'),
         'ms': (1.0/(10**(12)), 'direct'),
