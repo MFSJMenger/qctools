@@ -2,7 +2,7 @@
 """Top-level package for qctools."""
 
 __author__ = """Maximilian Menger"""
-__email__ = 'maximilian.menger@univie.ac.at'
+__email__ = 'm.f.s.j.menger@rug.nl'
 __version__ = '0.2.0'
 
 from .generator import generate_filereader

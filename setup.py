@@ -5,7 +5,7 @@
 
 from setuptools import setup, find_packages
 from distutils.extension import Extension
-from Cython.Distutils import build_ext
+#from Cython.Distutils import build_ext
 import numpy as np
 import os
 
@@ -22,20 +22,20 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=6.0', ]
+requirements = ['Click>=6.0', 'pycolt>=0.2' ]
 
 setup_requirements = ['pytest-runner', ]
 
 test_requirements = ['pytest', ]
 
 
-cppgrep = Extension('qctools.cppgrep',
-                    sources=["src/cppgrep.pyx", "src/filehandler.cpp"],
-                    include_dirs=[np.get_include(), ljoin("include")],
-                    language="c++",
-                    extra_compile_args=['-std=c++11', "-O3"],
-                    extra_link_args=['-L/usr/lib/x86_64-linux-gnu/'], # in case -lpthread etc. are not found!
-)
+#cppgrep = Extension('qctools.cppgrep',
+#                    sources=["src/cppgrep.pyx", "src/filehandler.cpp"],
+#                    include_dirs=[np.get_include(), ljoin("include")],
+#                    language="c++",
+#                    extra_compile_args=['-std=c++11', "-O3"],
+#                    extra_link_args=['-L/usr/lib/x86_64-linux-gnu/'], # in case -lpthread etc. are not found!
+#)
 
 
 setup(
@@ -60,8 +60,8 @@ setup(
         ],
     },
 
-    ext_modules = [cppgrep],
-    cmdclass = {'build_ext': build_ext},
+#    ext_modules = [cppgrep],
+#    cmdclass = {'build_ext': build_ext},
 
     install_requires=requirements,
     long_description=readme + '\n\n' + history,
