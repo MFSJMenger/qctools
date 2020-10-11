@@ -1,7 +1,7 @@
-from ..fileinput import pygrep_str
-from ..fileinput import pygrep_iterator
+from qctools.fileinput import pygrep_str
+from qctools.fileinput import pygrep_iterator
 # from ..fileinput import pygrep_iterator_lines
-from ..fileio import file_reading_iterator_raw
+from qctools.fileio import file_reading_iterator_raw
 import os
 
 

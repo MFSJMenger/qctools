@@ -1,4 +1,4 @@
-from ..utils import substitute_args_kwargs
+from qctools.utils import substitute_args_kwargs
 
 
 def substitute_help_func(dct, *args, **kwargs):

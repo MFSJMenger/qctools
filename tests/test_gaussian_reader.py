@@ -1,7 +1,7 @@
 import pytest
 import os
 
-from ..parser import GaussianReader
+from qctools.parser import GaussianReader
 
 # get absolute path for h2o.log file
 pwd = os.path.dirname(os.path.abspath(__file__))

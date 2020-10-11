@@ -1,7 +1,7 @@
 import pytest
 import random
 
-from ..converter import Converter
+from qctools.converter import Converter
 
 
 @pytest.fixture

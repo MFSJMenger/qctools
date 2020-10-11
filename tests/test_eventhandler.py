@@ -1,7 +1,7 @@
 import pytest
 
-from ..eventhandler import EventHandler
-from ..events import Event, register_event_type
+from qctools.eventhandler import EventHandler
+from qctools.events import Event, register_event_type
 
 
 @pytest.fixture

@@ -1,4 +1,4 @@
-from ..mathexpression import MathExpression
+from qctools.expression.mathexpression import MathExpression
 
 
 def test_number():
