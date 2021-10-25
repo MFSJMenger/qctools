@@ -142,22 +142,39 @@ class EventGenerator(Generator):
         return JoinedEventContainer(name, leaf)
 
     @staticmethod
-    def new_node():
+    def new_node(comment=None):
         return EventDict()
 
     @staticmethod
-    def tree_container():
+    def tree_container(comment=None):
         return EventDict()
 
-    def leaf_from_string(self, name, value, parent):
+    def leaf_from_string(self, entry, *, parent=None):
+        """Create a leaf from an entry in the config file
+
+        Args:
+            entry, AstEntry
+                contains main info for value
+
+        Kwargs:
+            parent (str):
+                identifier of the parent node
+
+        Returns:
+            A leaf node
+
+        Raises:
+            ValueError:
+                If the value cannot be parsed
+        """
         if not self._is_single_layer(parent):
             raise Exception("Generator accepts only one layer")
-        if name == 'grep':
-            return Grep(value)
-        if name == 'split':
-            return Split(value)
-        if name == 'settings':
-            return Settings(value)
+        if entry.name == 'grep':
+            return Grep(entry.value)
+        if entry.name == 'split':
+            return Split(entry.value)
+        if entry.name == 'settings':
+            return Settings(entry.value)
         raise InputError('cannot parse tree')
 
     @classmethod
