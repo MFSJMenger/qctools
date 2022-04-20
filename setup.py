@@ -41,13 +41,12 @@ test_requirements = ['pytest', ]
 setup(
     author="Maximilian F.S.J. Menger",
     author_email='m.f.s.j.menger@rug.nl',
-    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
+    python_requires='>=3.6',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
@@ -68,6 +67,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/mfsjmenger/qctools',
-    version='0.2.0',
+    version='0.3.0',
     zip_safe=False,
 )
