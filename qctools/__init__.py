@@ -2,8 +2,7 @@
 """Top-level package for qctools."""
 
 __author__ = """Maximilian Menger"""
-__email__ = 'm.f.s.j.menger@rug.nl'
-__version__ = '0.2.0'
+__version__ = '0.4.0'
 
 from .generator import generate_filereader
 from .parser import GaussianReader
