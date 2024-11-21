@@ -40,7 +40,6 @@ test_requirements = ['pytest', ]
 
 setup(
     author="Maximilian F.S.J. Menger",
-    author_email='m.f.s.j.menger@rug.nl',
     python_requires='>=3.6',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

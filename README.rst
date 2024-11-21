@@ -2,13 +2,6 @@
 qctools
 =======
 
-
-.. image:: https://pyup.io/repos/github/MFSJMenger/qctools/shield.svg
-     :target: https://pyup.io/repos/github/MFSJMenger/qctools/
-     :alt: Updates
-
-
-
 Python tools for quantum chemists
 
 
